@@ -41,8 +41,14 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           is kept in the browser after you close the packet.
         </p>
         <p>
-          Click <b>Save</b> (top right) to download the student's file, named like <code>Jordan_Lee_packet.json</code>. The
+          Click <b>Save</b> (top right) to save the student's file, named like <code>Jordan_Lee_packet.json</code>. The
           Save button turns orange when there are changes that haven't been saved.
+        </p>
+        <p>
+          In <b>Chrome, Edge, or on a Chromebook</b>, Save opens a <b>Save As</b> window. Pick the staff folder, keep or
+          change the name, and click Save. If you click Cancel, nothing is saved and the packet still says "Not saved yet."
+          To save into Google Drive from a Mac or PC, the computer needs Google Drive for desktop; otherwise save it, then
+          upload it to Drive. In <b>Safari or Firefox</b>, Save goes straight to the Downloads folder, so move it from there.
         </p>
         <p>
           The file has the student's contact info, so keep it in a <b>staff-only</b> folder, like a shared TRACE Google
@@ -84,8 +90,9 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           student's folder. You can add or remove pages before printing.
         </p>
         <p>
-          The resume and cover letter also have <b>Download Word file</b>. It opens in Word or Google Docs (File, Open,
-          Upload) if the student wants to change the wording.
+          The resume and cover letter also have <b>Download Word file</b>. Like Save, it opens a Save As window in Chrome
+          and Edge so you can pick the folder. It opens in Word or Google Docs (File, Open, Upload) if the student wants to
+          change the wording.
         </p>
       </Topic>
 
