@@ -1,0 +1,107 @@
+// How-to page for TRACE staff. Works with or without a packet open.
+import type { ReactNode } from 'react'
+
+interface TopicProps {
+  title: string
+  children: ReactNode
+}
+
+function Topic({ title, children }: TopicProps) {
+  return (
+    <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
+      <h2 className="font-serif text-2xl font-bold text-slate-900">{title}</h2>
+      <div className="mt-2 space-y-2 text-lg text-slate-700">{children}</div>
+    </section>
+  )
+}
+
+interface HelpPageProps {
+  onBack: () => void
+  backLabel: string
+}
+
+export function HelpPage({ onBack, backLabel }: HelpPageProps) {
+  return (
+    <div className="mx-auto max-w-3xl space-y-5 px-4 py-8">
+      <button type="button" onClick={onBack}
+        className="rounded-lg border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-slate-400">
+        ← {backLabel}
+      </button>
+      <h1 className="font-serif text-4xl font-bold text-slate-900">Help for staff</h1>
+      <p className="text-lg text-slate-600">
+        This site turns the TRACE Job Readiness Packet into step-by-step screens. Sit with the student, read each step
+        together, and let them do the clicking and typing when they can.
+      </p>
+
+      <Topic title="Where student info goes">
+        <p>
+          <b>The website stores nothing.</b> Answers live only in this browser tab. Nothing is sent to a server, and nothing
+          is kept in the browser after you close the packet.
+        </p>
+        <p>
+          Click <b>Save</b> (top right) to download the student's file, named like <code>Jordan_Lee_packet.json</code>. The
+          Save button turns orange when there are changes that haven't been saved.
+        </p>
+        <p>
+          The file has the student's contact info, so keep it in a <b>staff-only</b> folder, like a shared TRACE Google
+          Drive folder. Don't email it to the student or leave it in Downloads on a shared computer.
+        </p>
+        <p>Never type a Social Security number, ID numbers, or passwords anywhere in the packet. There is no place for them on purpose.</p>
+      </Topic>
+
+      <Topic title="Picking up where you left off">
+        <p>
+          On the first screen, click <b>Open a saved packet</b> and pick the student's file. If you saved it to Google
+          Drive, download it first, or on a Chromebook pick it from the Google Drive section of the file picker.
+        </p>
+        <p>
+          When you're done, click <b>Save</b>, then <b>Close</b>. Close clears the student's info off the screen so the
+          next person can't see it.
+        </p>
+      </Topic>
+
+      <Topic title="How the pages fit together">
+        <p>
+          Start with <b>About Me</b>. Name, contact info, school, jobs, strengths, and availability are typed once there and
+          fill in the resume, cover letter, application sheet, and other pages.
+        </p>
+        <p>
+          Pages can be done in any order. Each page ends on a <b>Review & print</b> screen. Check <b>This page is done</b>
+          there to put a checkmark and date on the Home screen and the cover page.
+        </p>
+        <p>Dashed "idea" buttons drop a suggestion into the box above them. The student can change it after.</p>
+      </Topic>
+
+      <Topic title="Printing and PDFs">
+        <p>
+          Click <b>Print / Save as PDF</b>. To make a PDF, pick <b>Save as PDF</b> as the printer. For the best match to the
+          paper handouts, turn on <b>Background graphics</b> and turn off <b>Headers and footers</b> under More settings.
+        </p>
+        <p>
+          <b>Print all</b> on the Home screen prints the cover page and every page marked done, as one PDF for the
+          student's folder. You can add or remove pages before printing.
+        </p>
+        <p>
+          The resume and cover letter also have <b>Download Word file</b>. It opens in Word or Google Docs (File, Open,
+          Upload) if the student wants to change the wording.
+        </p>
+      </Topic>
+
+      <Topic title="Interview Prep quiz">
+        <p>
+          On the "Agree or disagree" step, the student answers first. Then click <b>Teacher: check answers</b> to show which
+          answers match the key, and talk through any that don't. The answer key also prints at the bottom of the quiz page,
+          like the paper handout.
+        </p>
+      </Topic>
+
+      <Topic title="Keyboard and screen size">
+        <p>
+          Everything works with the keyboard: <b>Tab</b> moves between boxes and buttons, <b>Enter</b> or <b>Space</b>
+          presses a button. Use <b>Ctrl +</b> (or <b>⌘ +</b> on a Mac) to make everything bigger, and <b>Ctrl -</b> to
+          make it smaller.
+        </p>
+      </Topic>
+    </div>
+  )
+}
