@@ -47,7 +47,7 @@ export function ApplicationsStep() {
         </Card>
       ))}
       <button type="button" onClick={() => update((d) => { d.pages.tracker.rows.push(blankApplication()) })}
-        className="rounded-lg border-2 border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another job
       </button>
     </>

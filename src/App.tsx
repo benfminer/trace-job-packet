@@ -97,7 +97,7 @@ export function App() {
   return (
     <StoreContext.Provider value={store}>
       <TopBar dirty={dirty} onSave={save} onClose={() => (dirty ? setClosing(true) : close())} />
-      <main key={routeHash(route)}>
+      <main key={routeHash(route)} className="anim-rise">
         <View />
       </main>
       {closing && (

@@ -53,7 +53,7 @@ export function WorkStep() {
       <Tip>Start with the most recent. <b>TRACE work sites and volunteering count.</b> Fill in only what you have.</Tip>
       {p.jobs.map((job, i) => <JobCard key={i} index={i} job={job} onChange={(k, v) => setJob(i, k, v)} />)}
       <button type="button" onClick={() => update((d) => { d.profile.jobs.push(blankJob()) })}
-        className="rounded-lg border-2 border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another job
       </button>
     </>

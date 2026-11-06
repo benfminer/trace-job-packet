@@ -1,4 +1,5 @@
-// Always-visible bar: Home, the student's name, Save, and Close.
+// Always-visible bar: logo (goes Home), the student's name, Home, Save, and Close.
+import { Download, House, X } from 'lucide-react'
 import { useStore } from '../data/store'
 import { fullName } from '../data/derive'
 
@@ -8,26 +9,44 @@ interface TopBarProps {
   onClose: () => void
 }
 
+const barButton =
+  'inline-flex items-center gap-2 rounded-md border px-3 py-1.5 font-medium transition-colors '
+const ghost = barButton + 'border-white/25 text-white hover:bg-white/10'
+
 export function TopBar({ dirty, onSave, onClose }: TopBarProps) {
   const { packet, go } = useStore()
+  const p = packet.profile
+  const name = fullName(p)
+  const initials = (p.firstName.charAt(0) + p.lastName.charAt(0)).toUpperCase()
   return (
-    <header className="no-print sticky top-0 z-20 h-16 border-b border-slate-200 bg-white">
-      <div className="mx-auto flex h-full max-w-5xl items-center gap-3 px-4">
-        <button type="button" onClick={() => go({ view: 'home' })} className="text-left">
-          <span className="block text-xs font-bold tracking-wide text-brand uppercase">TRACE Job Packet</span>
-          <span className="block font-serif text-lg font-bold text-slate-900">{fullName(packet.profile) || 'New student'}</span>
+    <header className="top-bar no-print sticky top-0 z-20 h-16 border-b border-white/10 text-white">
+      <div className="mx-auto flex h-full max-w-6xl items-center gap-4 px-4">
+        <button type="button" onClick={() => go({ view: 'home' })} className="flex items-center gap-2.5 text-left">
+          <span className="grid size-9 place-items-center rounded-lg bg-white text-lg font-bold text-brand-dark shadow-sm">T</span>
+          <span className="leading-tight">
+            <span className="block text-[15px] font-bold tracking-wide">TRACE</span>
+            <span className="block text-xs text-brand-soft">Job Readiness Packet</span>
+          </span>
         </button>
-        <button type="button" onClick={() => go({ view: 'home' })}
-          className="ml-2 rounded-lg px-3 py-2 font-semibold text-slate-700 hover:bg-slate-100">⌂ Home</button>
+        <span className="hidden h-7 w-px bg-white/20 sm:block" />
+        <span className="hidden items-center gap-2 text-[15px] font-medium text-[#e2e4ff] sm:flex">
+          {initials && <span className="grid size-7 place-items-center rounded-full bg-white/15 text-xs font-semibold">{initials}</span>}
+          {name || 'New student'}
+        </span>
         <div className="ml-auto flex items-center gap-2">
-          {dirty && <span className="hidden text-sm font-semibold text-amber-700 sm:inline">Not saved yet</span>}
-          <button type="button" onClick={onSave}
-            className={'rounded-lg px-4 py-2 font-semibold ' + (dirty ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}>
-            Save
+          {dirty && <span className="hidden text-sm font-medium text-amber-200 md:inline">Not saved yet</span>}
+          <button type="button" onClick={() => go({ view: 'home' })} className={ghost}>
+            <House aria-hidden className="size-4" /><span className="hidden sm:inline">Home</span>
+            <span className="sr-only sm:hidden">Home</span>
           </button>
-          <button type="button" onClick={onClose}
-            className="rounded-lg border-2 border-slate-300 px-3 py-1.5 font-semibold text-slate-700 hover:border-slate-400">
-            Close
+          <button type="button" onClick={onSave}
+            className={barButton + (dirty
+              ? 'border-amber-400 bg-amber-400 font-semibold text-slate-900 hover:bg-amber-300'
+              : 'border-white/25 text-white hover:bg-white/10')}>
+            <Download aria-hidden className="size-4" />Save
+          </button>
+          <button type="button" onClick={onClose} className={ghost}>
+            Close<X aria-hidden className="size-4" />
           </button>
         </div>
       </div>

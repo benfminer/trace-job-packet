@@ -1,5 +1,7 @@
 // How-to page for TRACE staff. Works with or without a packet open.
 import type { ReactNode } from 'react'
+import { ArrowLeft } from 'lucide-react'
+import { PageBand } from './PageBand'
 
 interface TopicProps {
   title: string
@@ -8,8 +10,8 @@ interface TopicProps {
 
 function Topic({ title, children }: TopicProps) {
   return (
-    <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-      <h2 className="font-serif text-2xl font-bold text-slate-900">{title}</h2>
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <h2 className="screen-title text-2xl font-semibold text-slate-900">{title}</h2>
       <div className="mt-2 space-y-2 text-lg text-slate-700">{children}</div>
     </section>
   )
@@ -22,16 +24,16 @@ interface HelpPageProps {
 
 export function HelpPage({ onBack, backLabel }: HelpPageProps) {
   return (
-    <div className="mx-auto max-w-3xl space-y-5 px-4 py-8">
+    <>
+    <PageBand eyebrow="For TRACE staff" title="Help for staff" width="max-w-3xl">
+      This site turns the TRACE Job Readiness Packet into step-by-step screens. Sit with the student, read each step
+      together, and let them do the clicking and typing when they can.
+    </PageBand>
+    <div className="mx-auto -mt-14 max-w-3xl space-y-5 px-4 pb-12">
       <button type="button" onClick={onBack}
-        className="rounded-lg border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-slate-400">
-        ← {backLabel}
+        className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-xl hover:border-slate-400">
+        <ArrowLeft aria-hidden className="size-5" />{backLabel}
       </button>
-      <h1 className="font-serif text-4xl font-bold text-slate-900">Help for staff</h1>
-      <p className="text-lg text-slate-600">
-        This site turns the TRACE Job Readiness Packet into step-by-step screens. Sit with the student, read each step
-        together, and let them do the clicking and typing when they can.
-      </p>
 
       <Topic title="Where student info goes">
         <p>
@@ -103,5 +105,6 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
         </p>
       </Topic>
     </div>
+    </>
   )
 }

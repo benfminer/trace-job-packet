@@ -66,11 +66,11 @@ export function PrintAll() {
         <div className="mx-auto max-w-5xl px-4 py-4">
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" onClick={() => go({ view: 'home' })}
-              className="rounded-lg border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-slate-400">
+              className="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50">
               ← Home
             </button>
             <button type="button" onClick={() => window.print()} disabled={sheets.length === 0}
-              className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark disabled:opacity-50">
+              className="rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark disabled:opacity-50">
               Print / Save as PDF
             </button>
             <span className="text-slate-600">{sheets.length} sheet{sheets.length === 1 ? '' : 's'} picked</span>

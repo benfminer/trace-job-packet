@@ -63,7 +63,7 @@ export function PracticeStep() {
         </Card>
       ))}
       <button type="button" onClick={() => update((d) => { d.pages.interview.practice.push({ who: '', date: '' }) })}
-        className="rounded-lg border-2 border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another
       </button>
       <Card>
@@ -145,9 +145,9 @@ export function QuizStep() {
           </div>
         )
       })}
-      <div className="rounded-xl border-2 border-dashed border-slate-300 p-4">
+      <div className="rounded-xl border border-dashed border-slate-300 p-4">
         <button type="button" onClick={() => setShowKey(!showKey)}
-          className="rounded-lg border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-brand">
+          className="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm hover:border-brand hover:text-brand">
           {showKey ? 'Hide answer key' : 'Teacher: check answers'}
         </button>
         {showKey && <p className="mt-2 text-slate-700"><b>Answer key:</b> {QUIZ_KEY}</p>}
@@ -206,7 +206,7 @@ export function ThankYouStep() {
       <Card title="My thank-you note">
         <p className="text-lg whitespace-pre-line">{note}</p>
         <button type="button" onClick={copy}
-          className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark">
+          className="rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark">
           {copied ? '✓ Copied' : 'Copy the note'}
         </button>
         <p className="text-sm text-slate-500">Then paste it into an email or text message.</p>

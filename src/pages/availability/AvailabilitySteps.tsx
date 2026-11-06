@@ -19,12 +19,12 @@ export function TimesStep() {
         {DAYS.map((day) => {
           const a = p.availability[day]
           return (
-            <div key={day} className="rounded-xl border-2 border-slate-200 p-3">
+            <div key={day} className="rounded-xl border border-slate-200 p-3">
               <p className="mb-2 text-lg font-bold">{day}</p>
               <div className="flex flex-wrap gap-2">
                 {SLOTS.map((s) => (
                   <button key={s.key} type="button" aria-pressed={a[s.key]} onClick={() => setDay(day, s.key, !a[s.key])}
-                    className={'rounded-lg border-2 px-3 py-2 text-left ' +
+                    className={'rounded-md border px-3 py-2 text-left ' +
                       (a[s.key] ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-brand')}>
                     <span className="block font-semibold">{a[s.key] ? '✓ ' : ''}{s.label}</span>
                     <span className="text-sm opacity-80">{s.hours}</span>
@@ -59,7 +59,7 @@ export function CommitmentsStep() {
         </Card>
       ))}
       <button type="button" onClick={() => update((d) => { d.profile.commitments.push({ days: '', time: '', what: '' }) })}
-        className="rounded-lg border-2 border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another
       </button>
     </>
@@ -91,7 +91,7 @@ export function SentenceStep() {
         <Card title="Suggested from your answers">
           <p className="text-lg">{suggestion}</p>
           <button type="button" onClick={() => set('availabilityText', suggestion)}
-            className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark">Use this</button>
+            className="rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark">Use this</button>
         </Card>
       )}
       <TextArea label="What I'll write on applications" value={p.availabilityText} onChange={(v) => set('availabilityText', v)}

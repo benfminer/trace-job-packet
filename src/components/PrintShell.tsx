@@ -28,13 +28,13 @@ export function PrintShell({ page, sheets, extraButtons }: PrintShellProps) {
   return (
     <div>
       <div className="no-print sticky top-[64px] z-10 border-b border-slate-200 bg-slate-50/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <button type="button" onClick={() => go({ view: 'edit', page: page.id })}
-            className="rounded-lg border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-slate-400">
+            className="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50">
             ← Edit answers
           </button>
           <button type="button" onClick={() => window.print()}
-            className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark">
+            className="rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark">
             Print / Save as PDF
           </button>
           {extraButtons}
@@ -45,7 +45,7 @@ export function PrintShell({ page, sheets, extraButtons }: PrintShellProps) {
           </label>
         </div>
         {sheets.length > 1 && (
-          <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 pb-3 text-slate-700">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 pb-3 text-slate-700">
             <span className="font-semibold">Print:</span>
             {sheets.map((s) => (
               <label key={s.name} className="flex items-center gap-2">

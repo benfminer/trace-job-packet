@@ -65,7 +65,7 @@ export function HelpsStep() {
         </Card>
       ))}
       <button type="button" onClick={() => update((d) => { d.pages.disclosure.helps.push({ hard: '', helps: '' }) })}
-        className="rounded-lg border-2 border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another
       </button>
     </>

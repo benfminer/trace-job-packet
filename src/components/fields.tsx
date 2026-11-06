@@ -1,9 +1,10 @@
 // Form pieces used by every wizard. Big text, big tap targets.
 import { useId, type ReactNode } from 'react'
+import { Lightbulb } from 'lucide-react'
 
 const inputClass =
-  'w-full rounded-lg border-2 border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 ' +
-  'focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30'
+  'w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 shadow-sm ' +
+  'transition-shadow placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/20'
 
 interface TextProps {
   label: string
@@ -75,9 +76,9 @@ export function Select({ label, value, onChange, options }: SelectProps) {
   )
 }
 
-const pillBase = 'rounded-full border-2 px-4 py-2 text-base font-medium transition-colors '
+const pillBase = 'rounded-md border px-4 py-2 text-base font-medium shadow-sm transition-colors '
 const pillOn = 'border-brand bg-brand text-white'
-const pillOff = 'border-slate-300 bg-white text-slate-700 hover:border-brand'
+const pillOff = 'border-slate-300 bg-white text-slate-700 hover:border-brand hover:bg-brand/5'
 
 // Pick one. Clicking the chosen one again clears it.
 interface ChoiceProps<T extends string> {
@@ -155,7 +156,7 @@ export function MultiChoice({ label, value, onChange, options, hint, allowOther,
           }}
         >
           <input name="other" aria-label={`Other ${label}`} placeholder="Other: type your own" className={inputClass + ' py-2 text-base'} />
-          <button type="submit" className="rounded-lg border-2 border-slate-300 px-4 font-semibold text-slate-700 hover:border-brand">Add</button>
+          <button type="submit" className="rounded-md border border-slate-300 px-4 font-semibold text-slate-700 hover:border-brand">Add</button>
         </form>
       )}
       {hint && <p className="mt-1 text-sm text-slate-500">{hint}</p>}
@@ -206,7 +207,12 @@ interface ChildrenProps {
 }
 
 export function Tip({ children }: ChildrenProps) {
-  return <div className="rounded-r-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-3 text-base text-slate-800">{children}</div>
+  return (
+    <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50/70 px-4 py-3 text-base text-slate-800">
+      <Lightbulb aria-hidden className="mt-0.5 size-5 shrink-0 text-amber-600" />
+      <div>{children}</div>
+    </div>
+  )
 }
 
 interface GridProps extends ChildrenProps {
@@ -223,8 +229,8 @@ interface CardProps extends ChildrenProps {
 
 export function Card({ title, children }: CardProps) {
   return (
-    <div className="space-y-4 rounded-xl border-2 border-slate-200 bg-slate-50/60 p-4">
-      {title && <h3 className="text-lg font-bold text-brand">{title}</h3>}
+    <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      {title && <h3 className="text-lg font-semibold tracking-tight text-slate-900">{title}</h3>}
       {children}
     </div>
   )

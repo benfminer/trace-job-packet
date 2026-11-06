@@ -91,7 +91,7 @@ export function ReadItStep() {
   const { data: c, set, packet } = usePageData('coverLetter')
   return (
     <>
-      <div className="rounded-xl border-2 border-slate-200 bg-white p-5 font-serif text-lg leading-relaxed">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 font-serif text-lg leading-relaxed">
         <LetterBody packet={packet} paragraphs={coverLetterParagraphs(packet)} />
       </div>
       <Card title="Before you send it">

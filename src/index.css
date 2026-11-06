@@ -1,10 +1,32 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
 
+/* Screen look borrows from Stripe (see design/stripe/DESIGN.md): navy text, blue-tinted grays,
+   hairline borders, soft blue shadows. The printed sheets below set their own fonts and colors. */
 @theme {
-  --color-brand: #1e88d2;
-  --color-brand-dark: #166aa6;
+  /* Screen accent is Stripe's indigo. Printed sheets keep TRACE blue (#1e88d2), set in the handout styles below. */
+  --color-brand: #533afd;
+  --color-brand-dark: #4032c8;
+  --color-brand-tint: #eeedff;
+  --color-brand-soft: #cfcaff;
   --font-serif: Georgia, 'Times New Roman', serif;
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: 'Inter Variable', -apple-system, 'Segoe UI', Arial, sans-serif;
+
+  /* Blue-slate neutrals in place of Tailwind's slate. 900 is the navy used for text. */
+  --color-slate-50: #f8fafd;
+  --color-slate-100: #eef3f8;
+  --color-slate-200: #e5edf5;
+  --color-slate-300: #c9d5e3;
+  --color-slate-400: #95a4ba;
+  --color-slate-500: #5f6f87;
+  --color-slate-600: #50617a;
+  --color-slate-700: #3c4f69;
+  --color-slate-800: #273951;
+  --color-slate-900: #061b31;
+
+  --shadow-sm: 0 1px 2px rgb(0 55 112 / 0.06), 0 2px 8px -2px rgb(0 55 112 / 0.08);
+  --shadow: 0 4px 22px rgb(0 55 112 / 0.1), 0 4px 8px rgb(0 59 137 / 0.02);
+  --shadow-xl: 0 15px 40px -2px rgb(0 55 112 / 0.18), 0 5px 20px -2px rgb(0 59 137 / 0.06);
 }
 
 html {
@@ -12,8 +34,55 @@ html {
 }
 
 body {
-  background: #f1f5f9;
-  color: #1f1f1f;
+  background: var(--color-slate-50);
+  color: var(--color-slate-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings on screen: tight tracking like Stripe, but normal weight so they stay easy to read. */
+.screen-title {
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Indigo top bar and the glowing band behind page titles. */
+.top-bar {
+  background: #4032c8;
+}
+.page-band {
+  background:
+    radial-gradient(900px 320px at 90% -30%, rgb(251 118 250 / 0.35), transparent 60%),
+    radial-gradient(800px 300px at 10% 120%, rgb(58 163 234 / 0.35), transparent 60%),
+    linear-gradient(180deg, #4032c8, #533afd);
+}
+
+/* Gentle motion. Turned off for anyone who has asked their computer for less motion. */
+.anim-rise {
+  animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.anim-slide {
+  animation: slide 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.progress-fill {
+  background: linear-gradient(90deg, #533afd, #8a7dff);
+  transition: width 0.4s ease;
+  animation: grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+@keyframes slide {
+  from { opacity: 0; transform: translateX(12px); }
+}
+@keyframes grow {
+  from { width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* A thick, easy-to-see outline on whatever the keyboard is on. */
@@ -30,7 +99,7 @@ body {
   margin: 0 auto 0.4in;
   padding: 0.6in 0.65in;
   background: white;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+  box-shadow: 0 15px 40px -2px rgb(0 55 112 / 0.12), 0 5px 20px -2px rgb(0 59 137 / 0.05);
   font-family: Arial, Helvetica, sans-serif;
   font-size: 10.5pt;
   line-height: 1.3;
