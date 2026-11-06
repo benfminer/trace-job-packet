@@ -5,7 +5,6 @@ import { PAGES, type PageInfo } from '../data/pages'
 import { fullName, shortDate } from '../data/derive'
 import { PAGE_ICONS } from './icons'
 import { PageBand, ProgressBar } from './PageBand'
-import { PaperCopies } from './PaperCopies'
 import { btnPrimary as primary, btnSecondary as secondary } from './styles'
 
 interface StatusChipProps {
@@ -106,7 +105,15 @@ export function HomeScreen() {
           {pages.map((page) => <PageCard key={page.id} page={page} />)}
         </div>
 
-        <PaperCopies />
+        <button type="button" onClick={() => go({ view: 'paper' })}
+          className="group mt-9 flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-slate-300 hover:shadow">
+          <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-brand-tint text-brand"><Printer aria-hidden className="size-5" /></span>
+          <span className="flex-1">
+            <span className="block text-lg font-semibold tracking-tight text-slate-900">Blank paper copies</span>
+            <span className="block text-slate-600">Word files of every page, to print and fill in by hand, with how to use them.</span>
+          </span>
+          <ArrowRight aria-hidden className="size-5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+        </button>
       </div>
     </>
   )

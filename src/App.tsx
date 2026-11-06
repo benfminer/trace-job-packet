@@ -9,6 +9,7 @@ import { TopBar } from './components/TopBar'
 import { CloseDialog } from './components/CloseDialog'
 import { PrintAll } from './components/PrintAll'
 import { HelpPage } from './components/HelpPage'
+import { PaperPage } from './components/PaperPage'
 
 // Routes live in the URL hash (#/edit/references) so the browser Back button works.
 function readRoute(): Route {
@@ -16,6 +17,7 @@ function readRoute(): Route {
   if ((view === 'edit' || view === 'print') && page && PAGE_VIEWS[page]) return { view, page }
   if (view === 'print-all') return { view: 'printAll' }
   if (view === 'help') return { view: 'help' }
+  if (view === 'paper') return { view: 'paper' }
   return { view: 'home' }
 }
 
@@ -85,12 +87,14 @@ export function App() {
 
   if (!store) {
     if (route.view === 'help') return <HelpPage onBack={() => go({ view: 'home' })} backLabel="Back" />
-    return <StartScreen onOpen={open} onHelp={() => go({ view: 'help' })} />
+    if (route.view === 'paper') return <PaperPage onBack={() => go({ view: 'home' })} backLabel="Back" />
+    return <StartScreen onOpen={open} onHelp={() => go({ view: 'help' })} onPaper={() => go({ view: 'paper' })} />
   }
 
   const views = 'page' in route ? PAGE_VIEWS[route.page] : null
   const View = route.view === 'printAll' ? PrintAll
     : route.view === 'help' ? StaffHelp
+    : route.view === 'paper' ? PaperCopiesPage
     : !views ? HomeScreen
     : route.view === 'print' ? (views.Print ?? views.Edit) : views.Edit
 
@@ -109,6 +113,11 @@ export function App() {
       )}
     </StoreContext.Provider>
   )
+}
+
+function PaperCopiesPage() {
+  const { go } = useStore()
+  return <PaperPage onBack={() => go({ view: 'home' })} backLabel="Home" />
 }
 
 function StaffHelp() {

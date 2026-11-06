@@ -1,15 +1,18 @@
 // First screen: start a new packet or open a saved one.
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, CircleHelp, FolderOpen, Plus } from 'lucide-react'
+import { ArrowRight, CircleHelp, FolderOpen, Plus, Printer } from 'lucide-react'
 import { blankPacket, type Packet } from '../data/packet'
 import { readPacketFile } from '../data/saveLoad'
+
+const link = 'inline-flex items-center gap-2 text-lg font-semibold text-brand underline-offset-4 hover:text-brand-dark hover:underline'
 
 interface StartScreenProps {
   onOpen: (packet: Packet, isNew: boolean) => void
   onHelp: () => void
+  onPaper: () => void
 }
 
-export function StartScreen({ onOpen, onHelp }: StartScreenProps) {
+export function StartScreen({ onOpen, onHelp, onPaper }: StartScreenProps) {
   const fileInput = useRef<HTMLInputElement>(null)
   const [error, setError] = useState('')
 
@@ -71,10 +74,14 @@ export function StartScreen({ onOpen, onHelp }: StartScreenProps) {
         <b> Save</b> to download the student's file, and keep it in a staff-only folder (like your school Google Drive).
         Never put a Social Security number or passwords in the packet.
       </div>
-      <button type="button" onClick={onHelp}
-        className="mt-6 inline-flex items-center gap-2 text-lg font-semibold text-brand underline-offset-4 hover:text-brand-dark hover:underline">
-        <CircleHelp aria-hidden className="size-5" />Help for staff: how this works
-      </button>
+      <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+        <button type="button" onClick={onPaper} className={link}>
+          <Printer aria-hidden className="size-5" />Working on paper? Get blank pages to print
+        </button>
+        <button type="button" onClick={onHelp} className={link}>
+          <CircleHelp aria-hidden className="size-5" />Help for staff: how this works
+        </button>
+      </div>
     </div>
     </>
   )
