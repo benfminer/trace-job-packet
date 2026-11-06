@@ -1,18 +1,21 @@
 // Builds an editable Word copy of the resume.
-import { BorderStyle, Document, Packer, Paragraph, TabStopType, TextRun } from 'docx'
+import { BorderStyle, Document, Packer, Paragraph, TabStopType, Table, TableCell, TableRow, TextRun, WidthType } from 'docx'
 import type { Packet } from '../data/packet'
 import { resumeContent } from '../data/resume'
 
+export type ResumeContent = ReturnType<typeof resumeContent>
+
 const FONT = 'Georgia'
 const BLUE = '1E88D2'
-const RIGHT_EDGE = 10080 // 7 inches of text width, in twentieths of a point
+const MARGIN = 864 // 0.6 inch, in twentieths of a point
+const RIGHT_EDGE = 10512 // 7.3 inches of text width
 
-const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
+export const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
   new TextRun({ text: t, font: FONT, size: opts.size ?? 22, bold: opts.bold, color: opts.color, italics: opts.italics })
 
-const heading = (t: string) =>
+export const heading = (t: string) =>
   new Paragraph({
-    spacing: { before: 240, after: 80 },
+    spacing: { before: 180, after: 60 },
     border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: BLUE, space: 2 } },
     children: [new TextRun({ text: t.toUpperCase(), font: 'Arial', size: 20, bold: true, color: BLUE })],
   })
@@ -23,20 +26,34 @@ const row = (left: TextRun[], right: string) =>
     children: [...left, text(`\t${right}`, { color: '444444' })],
   })
 
-const bullet = (t: string) => new Paragraph({ bullet: { level: 0 }, children: [text(t)] })
-const plain = (t: string) => new Paragraph({ children: [text(t)] })
+export const bullet = (t: string) => new Paragraph({ bullet: { level: 0 }, children: [text(t)] })
+export const plain = (t: string) => new Paragraph({ children: [text(t)] })
 
-export function buildResumeDoc(packet: Packet) {
-  const r = resumeContent(packet)
-  const children: Paragraph[] = [
-    new Paragraph({ children: [text(r.name, { bold: true, size: 48 })] }),
+export const NO_BORDER = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' }
+
+// Skills in two columns (top to bottom), as a table with no borders so it stays easy to edit.
+const skillColumns = (skills: string[]) => {
+  const half = Math.ceil(skills.length / 2)
+  const cell = (items: string[]) =>
+    new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: items.length ? items.map(bullet) : [plain('')] })
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: { top: NO_BORDER, bottom: NO_BORDER, left: NO_BORDER, right: NO_BORDER, insideHorizontal: NO_BORDER, insideVertical: NO_BORDER },
+    rows: [new TableRow({ children: [cell(skills.slice(0, half)), cell(skills.slice(half))] })],
+  })
+}
+
+// The resume itself. The blank template (01) uses this too, with [bracket] placeholders.
+export function resumeBody(r: ResumeContent) {
+  const children: (Paragraph | Table)[] = [
+    new Paragraph({ children: [text(r.name, { bold: true, size: 44 })] }),
     new Paragraph({
       border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: BLUE, space: 4 } },
       children: [text(r.contact, { size: 20, color: '444444' })],
     }),
   ]
   if (r.objective) children.push(heading('Objective'), plain(r.objective))
-  if (r.skills.length) children.push(heading('Skills'), ...r.skills.map(bullet))
+  if (r.skills.length) children.push(heading('Skills'), skillColumns(r.skills))
   if (r.jobs.length) {
     children.push(heading('Work and Volunteer Experience'))
     r.jobs.forEach((j, i) => {
@@ -53,12 +70,20 @@ export function buildResumeDoc(packet: Packet) {
   if (r.certifications.length) children.push(heading('Certifications'), plain(r.certifications.join('  |  ')))
   if (r.languages) children.push(heading('Languages'), plain(r.languages))
   if (r.availability) children.push(heading('Availability'), plain(r.availability))
-  children.push(new Paragraph({ spacing: { before: 320 }, children: [text('References available on request.', { italics: true, color: '444444' })] }))
+  children.push(new Paragraph({ spacing: { before: 200 }, children: [text('References available on request.', { italics: true, color: '444444' })] }))
+  return children
+}
 
+export const PAGE_MARGIN = { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN }
+// US Letter. The docx library uses A4 unless told otherwise.
+export const LETTER = { width: 12240, height: 15840 }
+
+export function buildResumeDoc(packet: Packet) {
+  const r = resumeContent(packet)
   return new Document({
     creator: 'TRACE Job Packet',
     title: `${r.name} Resume`,
-    sections: [{ properties: { page: { margin: { top: 1080, bottom: 1080, left: 1080, right: 1080 } } }, children }],
+    sections: [{ properties: { page: { size: LETTER, margin: PAGE_MARGIN } }, children: resumeBody(r) }],
   })
 }
 

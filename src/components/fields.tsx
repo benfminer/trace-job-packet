@@ -1,8 +1,9 @@
 // Form pieces used by every wizard. Big text, big tap targets.
 import { useId, type ReactNode } from 'react'
 import { Lightbulb } from 'lucide-react'
+import { formatPhone } from '../data/format'
 
-const inputClass =
+export const inputClass =
   'w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 shadow-sm ' +
   'transition-shadow placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/20'
 
@@ -12,12 +13,15 @@ interface TextProps {
   onChange: (v: string) => void
   hint?: ReactNode
   placeholder?: string
-  type?: 'text' | 'tel' | 'email' | 'date'
+  type?: 'text' | 'tel' | 'email'
   width?: 'full' | 'short'
+  // Tidies the text as it's typed. Phone boxes format themselves.
+  format?: (v: string) => string
 }
 
-export function TextField({ label, value, onChange, hint, placeholder, type = 'text', width = 'full' }: TextProps) {
+export function TextField({ label, value, onChange, hint, placeholder, type = 'text', width = 'full', format }: TextProps) {
   const id = useId()
+  const tidy = format ?? (type === 'tel' ? formatPhone : undefined)
   return (
     <div className={width === 'short' ? 'max-w-xs' : ''}>
       <label htmlFor={id} className="mb-1 block text-base font-semibold text-slate-700">{label}</label>
@@ -27,14 +31,14 @@ export function TextField({ label, value, onChange, hint, placeholder, type = 't
         className={inputClass}
         value={value}
         placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(tidy ? tidy(e.target.value) : e.target.value)}
       />
       {hint && <p className="mt-1 text-sm text-slate-500">{hint}</p>}
     </div>
   )
 }
 
-interface TextAreaProps extends Omit<TextProps, 'type' | 'width'> {
+interface TextAreaProps extends Omit<TextProps, 'type' | 'width' | 'format'> {
   rows?: number
 }
 

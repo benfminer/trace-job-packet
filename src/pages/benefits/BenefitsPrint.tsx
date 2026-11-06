@@ -16,7 +16,7 @@ export function BenefitsSheet() {
       <HandoutHeader title="Benefits and Work" subtitle="Working and keeping my benefits" name={fullName(packet.profile)} updated={shortDate(todayIso())} />
       <Callout>{BENEFITS_INTRO}</Callout>
       <HSection title="Benefits I get now">
-        <div style={{ columns: 2 }}>
+        <div className="two-col" style={{ gridTemplateRows: `repeat(${Math.ceil((BENEFITS.length + 2) / 2)}, auto)` }}>
           {BENEFITS.map((o) => <div key={o}><Box on={b.getNow.includes(o)}>{o}</Box></div>)}
           <div><Box on={others.length > 0}>Other: {others.join(', ') || '________________'}</Box></div>
           <div><Box on={b.getNow.includes(BENEFITS_NOT_SURE)}>{BENEFITS_NOT_SURE}</Box></div>

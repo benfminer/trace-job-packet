@@ -8,7 +8,7 @@ export function samplePacket(): Packet {
   Object.assign(p.profile, {
     firstName: 'Jordan', lastName: 'Lee', street: '1234 Main Street', city: 'San Diego', zip: '92105',
     cellPhone: '(619) 555-0142', email: 'jordan.lee@email.com', dob: '2006-03-14', is18: 'yes',
-    traceStart: 'August 2025', traceWorkingOn: 'Job skills and travel training',
+    traceStart: '08/2025', traceWorkingOn: 'Job skills and travel training',
     hsName: 'Hoover High School', hsCredential: 'certificate', hsYear: '2024', highestGrade: '12',
     driversLicense: 'no', strengths: ['Reliable', 'Punctual', 'Team player'],
     doWell: 'keep my work area clean and organized',
@@ -52,7 +52,7 @@ export function samplePacket(): Packet {
   p.pages.references.uses[0] = { date: '2026-11-01', job: 'Smart & Final, Store Associate', listed: '#1, #2', toldThem: true }
   Object.assign(p.pages.coverLetter, {
     jobTitle: 'Store Associate', company: 'Smart & Final', companyStreet: '6235 El Cajon Blvd.',
-    companyCityStateZip: 'San Diego, CA 92115', whereFound: 'the Smart & Final careers website',
+    companyCity: 'San Diego', companyState: 'CA', companyZip: '92115', whereFound: 'the Smart & Final careers website',
     experienceWith: 'working with customers', place1: 'CVS',
     did1: 'stocked shelves, faced products, and helped customers find what they needed',
     strengths: ['Reliable', 'Punctual'], doWell: 'take pride in keeping my work area clean and organized',

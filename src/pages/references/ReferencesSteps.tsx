@@ -2,6 +2,7 @@
 import { usePageData } from '../../data/store'
 import { blankReferenceUse, type Reference, type ReferenceUse } from '../../data/packet'
 import { Card, Check, Grid, Ideas, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 
 export function ReferenceTip() {
   return (
@@ -42,7 +43,7 @@ export function ReferenceStep({ index }: ReferenceStepProps) {
       </div>
       <Card title="I asked them">
         <Check label="They said yes" checked={r.saidYes} onChange={(v) => set('saidYes', v)} />
-        <TextField label="Date" type="date" width="short" value={r.askedDate} onChange={(v) => set('askedDate', v)} />
+        <DateField label="Date" width="short" value={r.askedDate} onChange={(v) => set('askedDate', v)} />
       </Card>
     </>
   )
@@ -57,7 +58,7 @@ export function UsesStep() {
       {data.uses.map((u, i) => (
         <Card key={i}>
           <Grid cols={3}>
-            <TextField label="Date" type="date" value={u.date} onChange={(v) => set(i, 'date', v)} />
+            <DateField label="Date" value={u.date} onChange={(v) => set(i, 'date', v)} />
             <TextField label="Job / company" value={u.job} onChange={(v) => set(i, 'job', v)} />
             <TextField label="References I listed" value={u.listed} onChange={(v) => set(i, 'listed', v)} placeholder="#1, #2, #3" />
           </Grid>

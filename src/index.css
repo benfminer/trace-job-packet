@@ -283,11 +283,20 @@ body {
   }
 }
 
+/* Two columns that read top to bottom. CSS columns print as one long column in Chrome,
+   so this uses a grid; set grid-template-rows to half the item count where it's used. */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column;
+  column-gap: 16pt;
+}
+
 /* ---------- Resume ---------- */
 .r-sheet {
   font-family: Georgia, serif;
   font-size: 11pt;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 .r-contact {
   padding-bottom: 4pt;
@@ -296,13 +305,15 @@ body {
   color: #444;
 }
 .r-block {
-  margin-top: 12pt;
+  margin-top: 0.85em;
 }
 .r-block .h-section-title {
+  margin-bottom: 0.35em;
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9em;
 }
 .r-item + .r-item {
-  margin-top: 7pt;
+  margin-top: 0.5em;
 }
 .r-row {
   display: flex;
@@ -319,12 +330,11 @@ body {
   list-style: disc;
 }
 .r-skills {
-  columns: 2;
   padding-left: 16pt;
   list-style: disc;
 }
 .r-refs {
-  margin-top: 16pt;
+  margin-top: 1em;
   font-style: italic;
   color: #444;
 }

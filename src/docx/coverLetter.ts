@@ -1,6 +1,8 @@
 // Builds an editable Word copy of the cover letter.
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import type { Packet } from '../data/packet'
+import { cityLine } from '../data/format'
+import { LETTER } from './resume'
 import { contactLine, coverLetterParagraphs, fullName, greetingName, letterDate } from '../data/derive'
 
 const FONT = 'Georgia'
@@ -14,13 +16,13 @@ export function buildCoverLetterDoc(packet: Packet) {
   const p = packet.profile
   const c = packet.pages.coverLetter
   const name = fullName(p) || '[Your Name]'
-  const recipient = [c.hiringManager || 'Hiring Manager', c.company, c.companyStreet, c.companyCityStateZip].filter(Boolean)
+  const recipient = [c.hiringManager || 'Hiring Manager', c.company, c.companyStreet, cityLine(c.companyCity, c.companyState, c.companyZip)].filter(Boolean)
 
   return new Document({
     creator: 'TRACE Job Packet',
     title: `${name} Cover Letter`,
     sections: [{
-      properties: { page: { margin: { top: 1080, bottom: 1080, left: 1260, right: 1260 } } },
+      properties: { page: { size: LETTER, margin: { top: 1080, bottom: 1080, left: 1260, right: 1260 } } },
       children: [
         line(name, { size: 40, bold: true }),
         line(contactLine(p), { size: 19, color: '444444', after: 360 }),

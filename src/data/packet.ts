@@ -1,8 +1,10 @@
 // The whole student packet. This is exactly what goes into the save file.
 // Rule from the paper packet: no Social Security numbers, ID numbers, or passwords. Ever.
 
+import { splitCityStateZip } from './format'
+
 export const APP_ID = 'trace-job-packet'
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 export type YesNo = '' | 'yes' | 'no'
 
@@ -22,7 +24,11 @@ export type Contact = { name: string; relationship: string; phone: string }
 export type Job = {
   employer: string
   title: string
+  // Street address. Files saved before city/state/ZIP were split keep the whole address here.
   address: string
+  city: string
+  state: string
+  zip: string
   phone: string
   supervisor: string
   start: string
@@ -91,7 +97,7 @@ export type Application = {
 }
 
 export const blankJob = (): Job => ({
-  employer: '', title: '', address: '', phone: '', supervisor: '', start: '', end: '',
+  employer: '', title: '', address: '', city: '', state: 'CA', zip: '', phone: '', supervisor: '', start: '', end: '',
   startPay: '', endPay: '', duties: '', reasonLeft: '', okToContact: '',
 })
 
@@ -152,7 +158,8 @@ export function blankPacket() {
       emergency: [blankContact(), blankContact()],
 
       traceStart: '', traceWorkingOn: '',
-      hsName: '', hsAddress: '', hsDates: '',
+      // hsAddress is the street, like a job's address.
+      hsName: '', hsAddress: '', hsCity: '', hsState: 'CA', hsZip: '', hsDates: '',
       hsCredential: '' as '' | 'diploma' | 'certificate',
       hsYear: '', highestGrade: '',
       certifications: [blankCert(), blankCert(), blankCert()],
@@ -256,7 +263,7 @@ export function blankPacket() {
         rows: [blankApplication()],
       },
       coverLetter: {
-        jobTitle: '', company: '', companyStreet: '', companyCityStateZip: '',
+        jobTitle: '', company: '', companyStreet: '', companyCity: '', companyState: 'CA', companyZip: '',
         whereFound: '', hiringManager: '',
         experienceWith: '',
         place1: '', did1: '', place2: '', did2: '',
@@ -297,6 +304,14 @@ function fit(template: unknown, raw: unknown): unknown {
 
 export class PacketFileError extends Error {}
 
+// Version 1 had one "City, State ZIP" box on the cover letter. Version 2 has three.
+function splitCoverLetterCity(raw: object) {
+  const letter = (raw as { pages?: { coverLetter?: Record<string, unknown> } }).pages?.coverLetter
+  if (!letter || typeof letter.companyCityStateZip !== 'string' || !letter.companyCityStateZip.trim()) return
+  const { city, state, zip } = splitCityStateZip(letter.companyCityStateZip)
+  Object.assign(letter, { companyCity: city, companyZip: zip }, state ? { companyState: state } : {})
+}
+
 // Turns anything read from a save file into a safe, complete Packet.
 export function loadPacket(raw: unknown): Packet {
   if (!raw || typeof raw !== 'object' || (raw as { app?: unknown }).app !== APP_ID) {
@@ -306,7 +321,8 @@ export function loadPacket(raw: unknown): Packet {
   if (typeof version === 'number' && version > SCHEMA_VERSION) {
     throw new PacketFileError('This file was saved by a newer version of the app. Reload the page and try again.')
   }
-  // Future schema changes get migrated here, before fitting.
+  // Older files get migrated here, before fitting.
+  if (typeof version !== 'number' || version < 2) splitCoverLetterCity(raw)
   const packet = fit(blankPacket(), raw) as Packet
   packet.schemaVersion = SCHEMA_VERSION
   return packet

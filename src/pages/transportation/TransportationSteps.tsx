@@ -3,6 +3,7 @@ import { useProfile, usePageData } from '../../data/store'
 import { TRAVEL_MODES, yesNo } from '../../data/options'
 import type { Route } from '../../data/packet'
 import { Card, Check, Choice, Grid, MultiChoice, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 
 export function HowStep() {
   const { data: t, set } = usePageData('transportation')
@@ -49,7 +50,7 @@ export function RouteStep({ index }: RouteStepProps) {
       </Grid>
       <Card title="Practice run">
         <Check label="I practiced this trip" checked={r.practiced} onChange={(v) => set('practiced', v)} />
-        <TextField label="Date" type="date" width="short" value={r.practicedDate} onChange={(v) => set('practicedDate', v)} />
+        <DateField label="Date" width="short" value={r.practicedDate} onChange={(v) => set('practicedDate', v)} />
       </Card>
     </>
   )

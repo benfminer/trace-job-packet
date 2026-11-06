@@ -8,6 +8,7 @@ import {
 import { availabilitySentence, introText, strengthPhrase, thankYouText } from '../../data/derive'
 import { TEAM_KEYS, type InterviewKey, type Practice, type QuizAnswer } from '../../data/packet'
 import { Card, Check, Choice, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 
 type IntroKey = (typeof INTRO_PARTS)[number]['key']
 
@@ -57,7 +58,7 @@ export function PracticeStep() {
         <Card key={i}>
           <Grid>
             <TextField label="I practiced with" value={r.who} onChange={(v) => setRow(i, 'who', v)} />
-            <TextField label="Date" type="date" value={r.date} onChange={(v) => setRow(i, 'date', v)} />
+            <DateField label="Date" value={r.date} onChange={(v) => setRow(i, 'date', v)} />
           </Grid>
           {people.length > 0 && <Ideas label="Tap a person:" ideas={people} onPick={(v) => setRow(i, 'who', v)} />}
         </Card>

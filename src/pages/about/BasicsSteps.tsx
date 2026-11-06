@@ -1,7 +1,9 @@
 // About Me steps: names, address, contact info, emergency contacts.
 import { useStore, useProfile } from '../../data/store'
 import { Card, Choice, Grid, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 import { yesNo } from '../../data/options'
+import { formatState, formatZip } from '../../data/format'
 
 export function NameStep() {
   const { packet, update } = useStore()
@@ -33,8 +35,8 @@ export function AddressStep() {
       <TextField label="Apt / Unit #" value={p.apt} onChange={(v) => set('apt', v)} width="short" />
       <TextField label="City" value={p.city} onChange={(v) => set('city', v)} placeholder="San Diego" />
       <Grid>
-        <TextField label="State" value={p.state} onChange={(v) => set('state', v)} />
-        <TextField label="ZIP code" value={p.zip} onChange={(v) => set('zip', v)} />
+        <TextField label="State" value={p.state} onChange={(v) => set('state', v)} format={formatState} />
+        <TextField label="ZIP code" value={p.zip} onChange={(v) => set('zip', v)} format={formatZip} />
       </Grid>
     </Grid>
   )
@@ -49,7 +51,7 @@ export function ContactStep() {
         <TextField label="Other phone" type="tel" value={p.otherPhone} onChange={(v) => set('otherPhone', v)} />
         <TextField label="Email" type="email" value={p.email} onChange={(v) => set('email', v)}
           hint="Use a grown-up email address, like first.last@gmail.com." />
-        <TextField label="Date of birth" type="date" value={p.dob} onChange={(v) => set('dob', v)} />
+        <DateField label="Date of birth" value={p.dob} onChange={(v) => set('dob', v)} />
       </Grid>
       <Choice label="Are you 18 or older?" value={p.is18} onChange={(v) => set('is18', v)} options={yesNo} />
       <Tip>

@@ -3,6 +3,7 @@ import { usePageData } from '../../data/store'
 import { BENEFITS, BENEFITS_INTRO, BENEFITS_NOT_SURE, FREE_HELP, GOOD_TO_KNOW, REPORT_WAYS } from '../../data/options'
 import { blankPayReport, TEAM_KEYS, type PayReport } from '../../data/packet'
 import { Card, Grid, Ideas, MultiChoice, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 
 export function GetNowStep() {
   const { data, set } = usePageData('benefits')
@@ -54,7 +55,7 @@ export function ReportingStep() {
             <TextField label="Month" value={r.month} onChange={(v) => setRow(i, 'month', v)} placeholder="November" />
             <TextField label="Paydays" value={r.paydays} onChange={(v) => setRow(i, 'paydays', v)} placeholder="11/7, 11/21" />
             <TextField label="Total pay (before taxes)" value={r.total} onChange={(v) => setRow(i, 'total', v)} placeholder="$420.00" />
-            <TextField label="Date I reported" type="date" value={r.reported} onChange={(v) => setRow(i, 'reported', v)} />
+            <DateField label="Date I reported" value={r.reported} onChange={(v) => setRow(i, 'reported', v)} />
             <TextField label="Confirmation #" value={r.confirmation} onChange={(v) => setRow(i, 'confirmation', v)} />
           </Grid>
         </Card>

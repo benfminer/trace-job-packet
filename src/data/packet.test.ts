@@ -43,6 +43,17 @@ describe('save and open', () => {
     expect(p.status.tracker.done).toBe(false)
   })
 
+  it('splits the old one-box cover letter city into city, state, and ZIP', () => {
+    const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 1, pages: { coverLetter: { companyCityStateZip: 'San Diego, CA 92115' } } })
+    expect(p.pages.coverLetter).toMatchObject({ companyCity: 'San Diego', companyState: 'CA', companyZip: '92115' })
+    expect('companyCityStateZip' in p.pages.coverLetter).toBe(false)
+  })
+
+  it('keeps an old job address as the street', () => {
+    const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 1, profile: { jobs: [{ address: '1 Main St, San Diego' }] } })
+    expect(p.profile.jobs[0]).toMatchObject({ address: '1 Main St, San Diego', city: '', state: 'CA', zip: '' })
+  })
+
   it('ignores wrong types and unknown fields instead of crashing', () => {
     const p = loadPacket({
       app: 'trace-job-packet',

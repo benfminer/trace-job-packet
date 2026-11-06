@@ -4,6 +4,10 @@ import { blankJob, type Job } from '../../data/packet'
 import { STRENGTHS } from '../../data/derive'
 import { Card, Choice, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { yesNo } from '../../data/options'
+import { formatMonthYear } from '../../data/format'
+import { AddressFields, type AddressPart } from '../../components/AddressFields'
+
+const JOB_ADDRESS = { street: 'address', city: 'city', state: 'state', zip: 'zip' } as const satisfies Record<AddressPart, keyof Job>
 
 const REASON_IDEAS = [
   'My program internship ended.', 'It was a seasonal job.', 'I went back to school.',
@@ -22,12 +26,17 @@ function JobCard({ index, job, onChange }: JobCardProps) {
       <Grid>
         <TextField label="Employer" value={job.employer} onChange={(v) => onChange('employer', v)} placeholder="CVS, a TRACE work site, ..." />
         <TextField label="Job title" value={job.title} onChange={(v) => onChange('title', v)} placeholder="Store Associate, Volunteer, ..." />
-        <TextField label="Address" value={job.address} onChange={(v) => onChange('address', v)} />
+      </Grid>
+      <AddressFields street={job.address} city={job.city} state={job.state} zip={job.zip}
+        onChange={(part, v) => onChange(JOB_ADDRESS[part], v)} />
+      <Grid>
         <TextField label="Phone" type="tel" value={job.phone} onChange={(v) => onChange('phone', v)} />
         <TextField label="Supervisor" value={job.supervisor} onChange={(v) => onChange('supervisor', v)} />
         <Grid>
-          <TextField label="Start (month/year)" value={job.start} onChange={(v) => onChange('start', v)} placeholder="06/2025" />
-          <TextField label='End (or "Present")' value={job.end} onChange={(v) => onChange('end', v)} />
+          <TextField label="Start (month/year)" value={job.start} onChange={(v) => onChange('start', v)} placeholder="06/2025"
+            format={formatMonthYear} />
+          <TextField label='End (or "Present")' value={job.end} onChange={(v) => onChange('end', v)} placeholder="Present"
+            format={formatMonthYear} />
         </Grid>
         <TextField label="Starting pay" value={job.startPay} onChange={(v) => onChange('startPay', v)} placeholder="$16.85/hr or Unpaid" />
         <TextField label="Ending pay" value={job.endPay} onChange={(v) => onChange('endPay', v)} />

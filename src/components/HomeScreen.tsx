@@ -5,6 +5,7 @@ import { PAGES, type PageInfo } from '../data/pages'
 import { fullName, shortDate } from '../data/derive'
 import { PAGE_ICONS } from './icons'
 import { PageBand, ProgressBar } from './PageBand'
+import { PaperCopies } from './PaperCopies'
 import { btnPrimary as primary, btnSecondary as secondary } from './styles'
 
 interface StatusChipProps {
@@ -104,6 +105,8 @@ export function HomeScreen() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pages.map((page) => <PageCard key={page.id} page={page} />)}
         </div>
+
+        <PaperCopies />
       </div>
     </>
   )

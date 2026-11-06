@@ -4,6 +4,7 @@ import { HOW_APPLIED, JOB_RESULTS } from '../../data/options'
 import { addDays, todayIso } from '../../data/derive'
 import { blankApplication, type Application } from '../../data/packet'
 import { Card, Choice, Grid, Ideas, TextField, Tip } from '../../components/fields'
+import { DateField } from '../../components/DateField'
 
 // Still waiting to hear back and the follow-up date has come.
 const needsFollowUp = (r: Application) =>
@@ -30,8 +31,8 @@ export function ApplicationsStep() {
           <Grid>
             <TextField label="Company" value={r.company} onChange={(v) => set(i, 'company', v)} />
             <TextField label="Job title" value={r.title} onChange={(v) => set(i, 'title', v)} />
-            <TextField label="Date applied" type="date" value={r.date} onChange={(v) => set(i, 'date', v)} />
-            <TextField label="Follow-up date" type="date" value={r.followUp} onChange={(v) => set(i, 'followUp', v)} />
+            <DateField label="Date applied" value={r.date} onChange={(v) => set(i, 'date', v)} />
+            <DateField label="Follow-up date" value={r.followUp} onChange={(v) => set(i, 'followUp', v)} />
             <div>
               <TextField label="How I applied" value={r.how} onChange={(v) => set(i, 'how', v)} />
               <Ideas label="Tap one:" ideas={HOW_APPLIED} onPick={(v) => set(i, 'how', v)} />

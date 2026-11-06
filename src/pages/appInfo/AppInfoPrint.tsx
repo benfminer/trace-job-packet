@@ -2,6 +2,7 @@
 import { useStore } from '../../data/store'
 import type { Packet, YesNo } from '../../data/packet'
 import { availabilitySentence, fullName, shortDate, todayIso } from '../../data/derive'
+import { fullAddress } from '../../data/format'
 import { Box, Boxes, Callout, FieldTable, HandoutFooter, HandoutHeader, HSection, QuestionTable } from '../../components/handout'
 
 const YN = [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]
@@ -57,7 +58,7 @@ function JobAndSchoolSections({ packet }: SectionProps) {
         <FieldTable rows={[
           [['Current program', 'TRACE, San Diego Unified'], ['Start date', p.traceStart]],
           [['Address', '4063 Polk Ave., San Diego, CA 92105'], ["What I'm working on", p.traceWorkingOn]],
-          [['High school', p.hsName], ['Address', p.hsAddress]],
+          [['High school', p.hsName], ['Address', fullAddress(p.hsAddress, p.hsCity, p.hsState, p.hsZip)]],
           [['Dates attended', p.hsDates], ['Diploma or certificate?', <Boxes key="cred" options={[{ value: 'diploma', label: 'Diploma' }, { value: 'certificate', label: 'Certificate' }]} selected={p.hsCredential} />]],
           [['Year finished', p.hsYear], ['Highest grade completed', p.highestGrade]],
         ]} />
@@ -81,7 +82,7 @@ function WorkSection({ packet }: SectionProps) {
           <p className="h-small font-bold" style={{ color: '#1e88d2' }}>Job #{i + 1}{i === 0 ? ' (most recent)' : ''}</p>
           <FieldTable rows={[
             [['Employer', j.employer], ['Job title', j.title]],
-            [['Address', j.address], ['Phone', j.phone]],
+            [['Address', fullAddress(j.address, j.city, j.state, j.zip)], ['Phone', j.phone]],
             [['Supervisor', j.supervisor], ['Start (month/year)', j.start]],
             [['End (or "Present")', j.end], ['Starting pay', j.startPay]],
             [['Ending pay', j.endPay], ['OK to contact?', yn(j.okToContact)]],

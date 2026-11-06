@@ -4,6 +4,9 @@ import { STRENGTHS, coverLetterParagraphs } from '../../data/derive'
 import { Card, Check, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { LetterBody } from './LetterBody'
 import { SEND_CHECKLIST } from '../../data/options'
+import { AddressFields, type AddressPart } from '../../components/AddressFields'
+
+const COMPANY_ADDRESS = { street: 'companyStreet', city: 'companyCity', state: 'companyState', zip: 'companyZip' } as const satisfies Record<AddressPart, string>
 
 export function JobStep() {
   const { data: c, set } = usePageData('coverLetter')
@@ -12,9 +15,9 @@ export function JobStep() {
       <Grid>
         <TextField label="Job title" value={c.jobTitle} onChange={(v) => set('jobTitle', v)} placeholder="Store Associate" />
         <TextField label="Company name" value={c.company} onChange={(v) => set('company', v)} placeholder="Smart & Final" />
-        <TextField label="Company street address" value={c.companyStreet} onChange={(v) => set('companyStreet', v)} />
-        <TextField label="City, State ZIP" value={c.companyCityStateZip} onChange={(v) => set('companyCityStateZip', v)} placeholder="San Diego, CA 92115" />
       </Grid>
+      <AddressFields streetLabel="Company street address" street={c.companyStreet} city={c.companyCity} state={c.companyState} zip={c.companyZip}
+        onChange={(part, v) => set(COMPANY_ADDRESS[part], v)} />
       <div>
         <TextField label="Where I found the job" value={c.whereFound} onChange={(v) => set('whereFound', v)} />
         <Ideas ideas={['Indeed', 'the company website', 'a TRACE job fair']} onPick={(v) => set('whereFound', v)} />
