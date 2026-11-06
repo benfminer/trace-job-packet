@@ -7,6 +7,7 @@ import { fullName, shortDate, todayIso } from '../data/derive'
 import { PAGE_SHEETS } from '../pages/sheets'
 import { Box, Callout, FieldTable, HandoutFooter, HSection } from './handout'
 import { PageBand } from './PageBand'
+import { sheetClass, sheetLabelWidth } from './sheet'
 import { btnPrimary, btnSecondary } from './styles'
 
 const pick = 'flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-base transition-colors ' +
@@ -112,8 +113,8 @@ export function PrintAll() {
       <div className="sheets py-8">
         {sheets.map((s) => (
           <div key={s.name} className="sheet-wrap">
-            <p className="no-print mx-auto mb-2 max-w-[8.5in] px-1 text-sm font-semibold text-slate-500">{s.name}</p>
-            <article className="sheet">{s.content}</article>
+            <p className={`no-print mx-auto mb-2 px-1 text-sm font-semibold text-slate-500 ${sheetLabelWidth(s)}`}>{s.name}</p>
+            <article className={sheetClass(s)}>{s.content}</article>
           </div>
         ))}
       </div>

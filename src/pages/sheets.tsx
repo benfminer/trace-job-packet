@@ -1,5 +1,5 @@
 // The printed sheets for each page. Used by each page's print view and by Print all.
-import type { Sheet } from '../components/PrintShell'
+import type { Sheet } from '../components/sheet'
 import type { PageId } from '../data/packet'
 import { ResumeSheet } from './resume/ResumePrint'
 import { BuilderSheet, LetterSheet } from './coverLetter/CoverLetterPrint'
@@ -37,5 +37,5 @@ export const PAGE_SHEETS: Record<Exclude<PageId, 'about'>, Sheet[]> = {
     { name: 'Agree or disagree quiz', content: <QuizSheet /> },
     { name: 'Interview day', content: <InterviewDaySheet /> },
   ],
-  tracker: [{ name: 'Job Search Tracker', content: <TrackerSheet /> }],
+  tracker: [{ name: 'Job Search Tracker', content: <TrackerSheet />, landscape: true }],
 }

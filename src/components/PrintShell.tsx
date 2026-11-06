@@ -5,12 +5,8 @@ import { useStore } from '../data/store'
 import type { PageInfo } from '../data/pages'
 import { todayIso } from '../data/derive'
 import { PageBand } from './PageBand'
+import { sheetClass, sheetLabelWidth, type Sheet } from './sheet'
 import { btnPrimary, btnSecondary } from './styles'
-
-export interface Sheet {
-  name: string
-  content: ReactNode
-}
 
 interface PrintShellProps {
   page: PageInfo
@@ -73,8 +69,8 @@ export function PrintShell({ page, sheets, extraButtons }: PrintShellProps) {
       <div className="sheets py-8">
         {sheets.map((s) => (
           <div key={s.name} className={'sheet-wrap' + (skipped.includes(s.name) ? ' skip-print' : '')}>
-            <p className="no-print mx-auto mb-2 max-w-[8.5in] px-1 text-sm font-semibold text-slate-500">{s.name}</p>
-            <article className="sheet">{s.content}</article>
+            <p className={`no-print mx-auto mb-2 px-1 text-sm font-semibold text-slate-500 ${sheetLabelWidth(s)}`}>{s.name}</p>
+            <article className={sheetClass(s)}>{s.content}</article>
           </div>
         ))}
       </div>
