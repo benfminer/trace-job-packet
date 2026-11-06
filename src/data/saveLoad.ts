@@ -24,10 +24,42 @@ export function serializePacket(packet: Packet) {
   return JSON.stringify({ ...packet, savedAt: new Date().toISOString() }, null, 2)
 }
 
-export function downloadPacket(packet: Packet) {
-  downloadBlob(new Blob([serializePacket(packet)], { type: 'application/json' }), packetFileName(packet))
+type SaveFilePicker = (options: {
+  suggestedName: string
+  types: { description: string; accept: Record<string, string[]> }[]
+}) => Promise<FileSystemFileHandle>
+
+const FILE_TYPES = {
+  packet: { description: 'Packet save file', accept: { 'application/json': ['.json'] } },
+  word: { description: 'Word document', accept: { 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] } },
 }
 
+// Chrome and Edge open a "Save As" window so staff can pick the folder (like a Google Drive folder).
+// Other browsers download to the Downloads folder. Returns false if the window was cancelled.
+// The window has to open right after the click, so the file is made after it opens.
+export async function saveFile(fileName: string, kind: keyof typeof FILE_TYPES, makeBlob: () => Blob | Promise<Blob>) {
+  const pick = (window as { showSaveFilePicker?: SaveFilePicker }).showSaveFilePicker
+  if (!pick) {
+    downloadBlob(await makeBlob(), fileName)
+    return true
+  }
+  let file: FileSystemFileHandle
+  try {
+    file = await pick({ suggestedName: fileName, types: [FILE_TYPES[kind]] })
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') return false
+    // The window couldn't open (blocked or not allowed here), so download it the usual way.
+    downloadBlob(await makeBlob(), fileName)
+    return true
+  }
+  const out = await file.createWritable()
+  await out.write(await makeBlob())
+  await out.close()
+  return true
+}
+
+export const savePacket = (packet: Packet) =>
+  saveFile(packetFileName(packet), 'packet', () => new Blob([serializePacket(packet)], { type: 'application/json' }))
 export async function readPacketFile(file: File): Promise<Packet> {
   let raw: unknown
   try {

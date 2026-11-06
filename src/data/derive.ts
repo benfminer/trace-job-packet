@@ -5,6 +5,10 @@ type Profile = Packet['profile']
 
 export const fullName = (p: Profile) => [p.firstName, p.lastName].filter(Boolean).join(' ')
 
+// "Jordan Lee Resume.docx"
+export const wordFileName = (packet: Packet, kind: 'Resume' | 'Cover Letter') =>
+  `${fullName(packet.profile) || 'Student'} ${kind}.docx`
+
 export const cityStateZip = (p: Profile) =>
   [p.city, [p.state, p.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')
 

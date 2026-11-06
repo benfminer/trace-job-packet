@@ -3,7 +3,7 @@ import { Document, Packer, Paragraph, TextRun } from 'docx'
 import type { Packet } from '../data/packet'
 import { cityLine } from '../data/format'
 import { LETTER } from './resume'
-import { contactLine, coverLetterParagraphs, fullName, greetingName, letterDate } from '../data/derive'
+import { contactLine, coverLetterParagraphs, fullName, greetingName, letterDate, wordFileName } from '../data/derive'
 
 const FONT = 'Georgia'
 const line = (text: string, opts: { size?: number; bold?: boolean; color?: string; after?: number } = {}) =>
@@ -37,7 +37,6 @@ export function buildCoverLetterDoc(packet: Packet) {
   })
 }
 
-export const coverLetterFileName = (packet: Packet) =>
-  `${fullName(packet.profile) || 'Student'} Cover Letter.docx`
+export const coverLetterFileName = (packet: Packet) => wordFileName(packet, 'Cover Letter')
 
 export const coverLetterBlob = (packet: Packet) => Packer.toBlob(buildCoverLetterDoc(packet))

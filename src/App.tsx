@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Packet } from './data/packet'
 import { StoreContext, useStore, type Route, type Store } from './data/store'
-import { downloadPacket } from './data/saveLoad'
+import { savePacket } from './data/saveLoad'
 import { PAGE_VIEWS } from './pages/registry'
 import { StartScreen } from './components/StartScreen'
 import { HomeScreen } from './components/HomeScreen'
@@ -64,10 +64,12 @@ export function App() {
 
   const store: Store | null = useMemo(() => (packet ? { packet, update, go } : null), [packet, update, go])
 
-  const save = () => {
-    if (!packet) return
-    downloadPacket(packet)
-    setDirty(false)
+  // Resolves false if the Save As window was cancelled, so nothing counts as saved.
+  const save = async () => {
+    if (!packet) return false
+    const saved = await savePacket(packet)
+    if (saved) setDirty(false)
+    return saved
   }
 
   const open = useCallback((p: Packet, isNew: boolean) => {
@@ -106,7 +108,7 @@ export function App() {
       </main>
       {closing && (
         <CloseDialog
-          onSaveAndClose={() => { save(); close() }}
+          onSaveAndClose={async () => { if (await save()) close() }}
           onDiscard={close}
           onCancel={() => setClosing(false)}
         />

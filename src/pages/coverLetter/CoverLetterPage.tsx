@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { pageInfo } from '../../data/pages'
 import { useStore } from '../../data/store'
-import { availabilitySentence } from '../../data/derive'
-import { downloadBlob } from '../../data/saveLoad'
+import { availabilitySentence, wordFileName } from '../../data/derive'
+import { saveFile } from '../../data/saveLoad'
 import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
@@ -52,8 +52,8 @@ export function CoverLetterPrintView() {
   const { packet } = useStore()
   const downloadWord = async () => {
     // The Word library is big, so it only loads when someone asks for a Word file.
-    const { coverLetterBlob, coverLetterFileName } = await import('../../docx/coverLetter')
-    downloadBlob(await coverLetterBlob(packet), coverLetterFileName(packet))
+    // It loads after the Save As window opens (the window must open right after the click).
+    saveFile(wordFileName(packet, 'Cover Letter'), 'word', async () => (await import('../../docx/coverLetter')).coverLetterBlob(packet))
   }
   return (
     <PrintShell

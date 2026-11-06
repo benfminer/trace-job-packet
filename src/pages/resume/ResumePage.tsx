@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { pageInfo } from '../../data/pages'
 import { useStore } from '../../data/store'
 import { splitDuties } from '../../data/resume'
-import { downloadBlob } from '../../data/saveLoad'
+import { saveFile } from '../../data/saveLoad'
+import { wordFileName } from '../../data/derive'
 import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
@@ -43,8 +44,8 @@ export function ResumePrintView() {
   const { packet } = useStore()
   const downloadWord = async () => {
     // The Word library is big, so it only loads when someone asks for a Word file.
-    const { resumeBlob, resumeFileName } = await import('../../docx/resume')
-    downloadBlob(await resumeBlob(packet), resumeFileName(packet))
+    // It loads after the Save As window opens (the window must open right after the click).
+    saveFile(wordFileName(packet, 'Resume'), 'word', async () => (await import('../../docx/resume')).resumeBlob(packet))
   }
   return (
     <PrintShell

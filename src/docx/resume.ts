@@ -2,6 +2,7 @@
 import { BorderStyle, Document, Packer, Paragraph, TabStopType, Table, TableCell, TableRow, TextRun, WidthType } from 'docx'
 import type { Packet } from '../data/packet'
 import { resumeContent } from '../data/resume'
+import { wordFileName } from '../data/derive'
 
 export type ResumeContent = ReturnType<typeof resumeContent>
 
@@ -87,6 +88,6 @@ export function buildResumeDoc(packet: Packet) {
   })
 }
 
-export const resumeFileName = (packet: Packet) => `${resumeContent(packet).name.replace('[Your Name]', 'Student')} Resume.docx`
+export const resumeFileName = (packet: Packet) => wordFileName(packet, 'Resume')
 
 export const resumeBlob = (packet: Packet) => Packer.toBlob(buildResumeDoc(packet))
