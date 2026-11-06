@@ -1,13 +1,15 @@
 // "Download Word file" button for print views that have an editable Word version.
+import { FileDown } from 'lucide-react'
+import { btnSecondary } from './styles'
+
 interface WordButtonProps {
   onClick: () => void
 }
 
 export function WordButton({ onClick }: WordButtonProps) {
   return (
-    <button type="button" onClick={onClick}
-      className="rounded-md border border-brand bg-white px-4 py-2 font-semibold text-brand hover:bg-brand/10">
-      Download Word file
+    <button type="button" onClick={onClick} className={btnSecondary}>
+      <FileDown aria-hidden className="size-5" />Download Word file
     </button>
   )
 }

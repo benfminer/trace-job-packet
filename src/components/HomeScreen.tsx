@@ -5,9 +5,7 @@ import { PAGES, type PageInfo } from '../data/pages'
 import { fullName, shortDate } from '../data/derive'
 import { PAGE_ICONS } from './icons'
 import { PageBand, ProgressBar } from './PageBand'
-
-const primary = 'inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark'
-const secondary = 'inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm transition-colors hover:border-brand hover:text-brand'
+import { btnPrimary as primary, btnSecondary as secondary } from './styles'
 
 interface StatusChipProps {
   done: boolean

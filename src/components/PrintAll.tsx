@@ -1,10 +1,16 @@
 // Prints the whole folder: the cover page, then every page picked below.
 import { useState } from 'react'
+import { ArrowLeft, Check, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
 import { PAGES } from '../data/pages'
 import { fullName, shortDate, todayIso } from '../data/derive'
 import { PAGE_SHEETS } from '../pages/sheets'
 import { Box, Callout, FieldTable, HandoutFooter, HSection } from './handout'
+import { PageBand } from './PageBand'
+import { btnPrimary, btnSecondary } from './styles'
+
+const pick = 'flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-base transition-colors ' +
+  'hover:border-slate-300 has-[:checked]:border-brand has-[:checked]:bg-brand-tint'
 
 const PRINTABLE = PAGES.filter((p) => p.id !== 'about')
 
@@ -62,31 +68,40 @@ export function PrintAll() {
 
   return (
     <div>
-      <div className="no-print border-b border-slate-200 bg-slate-50">
-        <div className="mx-auto max-w-5xl px-4 py-4">
+      <PageBand eyebrow="Print all" title="Print the whole folder" width="max-w-6xl">
+        Pick the pages, then print them all at once or save them as one PDF.
+      </PageBand>
+      <div className="no-print mx-auto -mt-14 max-w-6xl px-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={() => go({ view: 'home' })}
-              className="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50">
-              ← Home
+            <button type="button" onClick={() => go({ view: 'home' })} className={btnSecondary}>
+              <ArrowLeft aria-hidden className="size-5" />Home
             </button>
-            <button type="button" onClick={() => window.print()} disabled={sheets.length === 0}
-              className="rounded-md bg-brand px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-brand-dark disabled:opacity-50">
-              Print / Save as PDF
+            <button type="button" onClick={() => window.print()} disabled={sheets.length === 0} className={btnPrimary}>
+              <Printer aria-hidden className="size-5" />Print / Save as PDF
             </button>
-            <span className="text-slate-600">{sheets.length} sheet{sheets.length === 1 ? '' : 's'} picked</span>
+            <span className="ml-auto rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 tabular-nums">
+              {sheets.length} sheet{sheets.length === 1 ? '' : 's'} picked
+            </span>
           </div>
-          <fieldset className="mt-4">
-            <legend className="font-semibold text-slate-800">What to print (pages marked done are picked for you):</legend>
-            <div className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
-              <label className="flex items-center gap-2 text-lg">
+          <fieldset className="mt-5 border-t border-slate-100 pt-4">
+            <legend className="sr-only">What to print</legend>
+            <p className="font-semibold text-slate-800">What to print</p>
+            <p className="text-slate-500">Pages marked done are picked for you.</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <label className={pick}>
                 <input type="checkbox" className="size-5 accent-brand" checked={cover} onChange={(e) => setCover(e.target.checked)} />
                 Cover page
               </label>
               {PRINTABLE.map((p) => (
-                <label key={p.id} className="flex items-center gap-2 text-lg">
+                <label key={p.id} className={pick}>
                   <input type="checkbox" className="size-5 accent-brand" checked={picked.includes(p.id)} onChange={(e) => toggle(p.id, e.target.checked)} />
-                  {p.num}. {p.title}
-                  {packet.status[p.id].done && <span className="text-sm font-semibold text-green-700">✓ done</span>}
+                  <span className="flex-1">{p.num}. {p.title}</span>
+                  {packet.status[p.id].done && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-800 ring-1 ring-green-200">
+                      <Check aria-hidden className="size-3" />Done
+                    </span>
+                  )}
                 </label>
               ))}
             </div>
@@ -94,7 +109,7 @@ export function PrintAll() {
         </div>
       </div>
 
-      <div className="sheets py-6">
+      <div className="sheets py-8">
         {sheets.map((s) => (
           <div key={s.name} className="sheet-wrap">
             <p className="no-print mx-auto mb-2 max-w-[8.5in] px-1 text-sm font-semibold text-slate-500">{s.name}</p>
