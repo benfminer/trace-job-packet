@@ -25,7 +25,7 @@ export function TransportationSheet() {
       </HSection>
       <HSection title="My route to work">
         {t.routes.map((r, i) => (
-          <div key={i} className="mb-2" style={{ breakInside: 'avoid' }}>
+          <div key={i} className="keep-together mb-2">
             <p className="h-small font-bold" style={{ color: '#1e88d2' }}>Workplace #{i + 1}</p>
             <FieldTable rows={[
               [['Workplace and address', r.workplace]],

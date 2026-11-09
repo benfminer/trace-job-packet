@@ -1,5 +1,5 @@
 // Prints the whole folder: the cover page, then every page picked below.
-import { useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, Check, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
 import { PAGES } from '../data/pages'
@@ -7,7 +7,7 @@ import { fullName, shortDate, todayIso } from '../data/derive'
 import { PAGE_SHEETS } from '../pages/sheets'
 import { Box, Callout, FieldTable, HandoutFooter, HSection } from './handout'
 import { PageBand } from './PageBand'
-import { sheetClass, sheetLabelWidth } from './sheet'
+import { printedPageHeight, sheetClass, sheetLabelWidth, type Sheet } from './sheet'
 import { btnPrimary, btnSecondary } from './styles'
 
 const pick = 'flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-base transition-colors ' +
@@ -54,17 +54,60 @@ function CoverSheet() {
   )
 }
 
+// How many printed pages a hidden copy of a sheet takes. Table rows and .keep-together blocks don't split, and section titles
+// stay with what follows them (index.css), so one that would cross a page edge moves down to the next page.
+function countPages(el: HTMLElement, pageHeight: number) {
+  const start = el.getBoundingClientRect().top
+  let pushed = 0
+  for (const part of el.querySelectorAll('tr, .keep-together, .h-section-title')) {
+    const box = part.getBoundingClientRect()
+    const top = box.top - start + pushed
+    // A title needs room for a line of what follows it.
+    const bottom = box.bottom - start + pushed + (part.matches('.h-section-title') ? 24 : 0)
+    const pageEnd = (Math.floor(top / pageHeight) + 1) * pageHeight
+    if (bottom > pageEnd && bottom - top < pageHeight) pushed += pageEnd - top
+  }
+  return Math.max(1, Math.ceil((el.offsetHeight + pushed - 1) / pageHeight))
+}
+
+// Counts how many printed pages each sheet takes, from hidden copies laid out at print width.
+function usePageCounts(sheets: Sheet[]) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [counts, setCounts] = useState<number[]>([])
+  useEffect(() => {
+    const box = ref.current
+    if (!box) return
+    const measure = () => {
+      const next = [...box.children].map((el, i) => countPages(el as HTMLElement, printedPageHeight(sheets[i])))
+      setCounts((old) => (old.join() === next.join() ? old : next))
+    }
+    const watch = new ResizeObserver(measure)
+    for (const el of box.children) watch.observe(el)
+    return () => watch.disconnect()
+  }, [sheets])
+  const measurer = (
+    <div ref={ref} aria-hidden className="sheet-measure no-print">
+      {sheets.map((s) => <article key={s.name} className={sheetClass(s)}>{s.content}</article>)}
+    </div>
+  )
+  return { counts, measurer }
+}
+
 export function PrintAll() {
   const { packet, go } = useStore()
   const [cover, setCover] = useState(true)
+  const [twoSided, setTwoSided] = useState(false)
   const [picked, setPicked] = useState(() => PRINTABLE.filter((p) => packet.status[p.id].done).map((p) => p.id))
-  const sheets = [
+  const sheets: Sheet[] = useMemo(() => [
     ...(cover ? [{ name: 'Cover page', content: <CoverSheet /> }] : []),
     ...PRINTABLE.filter((p) => picked.includes(p.id)).flatMap((p) => {
       const list = PAGE_SHEETS[p.id as keyof typeof PAGE_SHEETS]
       return list.map((s) => ({ ...s, name: `${p.num}. ${p.title}` + (list.length > 1 ? `: ${s.name}` : '') }))
     }),
-  ]
+  ], [cover, picked])
+  const { counts, measurer } = usePageCounts(sheets)
+  // Two-sided: a sheet with an odd page count gets a blank back, so every sheet starts on new paper.
+  const blankAfter = (i: number) => twoSided && i < sheets.length - 1 && (counts[i] ?? 1) % 2 === 1
   const toggle = (id: (typeof picked)[number], on: boolean) => setPicked(on ? [...picked, id] : picked.filter((x) => x !== id))
 
   return (
@@ -81,10 +124,19 @@ export function PrintAll() {
             <button type="button" onClick={() => window.print()} disabled={sheets.length === 0} className={btnPrimary}>
               <Printer aria-hidden className="size-5" />Print / Save as PDF
             </button>
+            <label className="flex cursor-pointer items-center gap-2 font-semibold text-slate-700">
+              <input type="checkbox" className="size-5 accent-brand" checked={twoSided} onChange={(e) => setTwoSided(e.target.checked)} />
+              Printing two-sided
+            </label>
             <span className="ml-auto rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 tabular-nums">
               {sheets.length} sheet{sheets.length === 1 ? '' : 's'} picked
             </span>
           </div>
+          {twoSided && (
+            <p className="mt-3 text-slate-600">
+              Turn on two-sided in the print window too. One-page sheets get a blank back, so each sheet starts on its own paper.
+            </p>
+          )}
           <fieldset className="mt-5 border-t border-slate-100 pt-4">
             <legend className="sr-only">What to print</legend>
             <p className="font-semibold text-slate-800">What to print</p>
@@ -111,13 +163,17 @@ export function PrintAll() {
       </div>
 
       <div className="sheets py-8">
-        {sheets.map((s) => (
-          <div key={s.name} className="sheet-wrap">
-            <p className={`no-print mx-auto mb-2 px-1 text-sm font-semibold text-slate-500 ${sheetLabelWidth(s)}`}>{s.name}</p>
-            <article className={sheetClass(s)}>{s.content}</article>
-          </div>
+        {sheets.map((s, i) => (
+          <Fragment key={s.name}>
+            <div className="sheet-wrap">
+              <p className={`no-print mx-auto mb-2 px-1 text-sm font-semibold text-slate-500 ${sheetLabelWidth(s)}`}>{s.name}</p>
+              <article className={sheetClass(s)}>{s.content}</article>
+            </div>
+            {blankAfter(i) && <div className="sheet-wrap duplex-blank" />}
+          </Fragment>
         ))}
       </div>
+      {measurer}
     </div>
   )
 }

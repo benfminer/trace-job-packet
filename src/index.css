@@ -185,7 +185,8 @@ body {
 }
 
 .h-box {
-  white-space: nowrap;
+  /* Long "Other: ..." answers wrap. Anything wider than the page makes Chrome shrink the whole printout. */
+  overflow-wrap: anywhere;
 }
 .h-box > span:first-child {
   font-size: 1.25em;
@@ -278,6 +279,34 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  /* Blank back of a one-page sheet when printing two-sided, so the next sheet starts on new paper. */
+  .duplex-blank {
+    height: 1px;
+    break-before: page;
+  }
+}
+@media screen {
+  .duplex-blank {
+    display: none;
+  }
+}
+
+/* Hidden copies of the sheets, laid out at their printed width so Print all can count their pages. */
+.sheet-measure {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  visibility: hidden;
+}
+.sheet-measure .sheet {
+  width: 7.3in;
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  zoom: 1;
+}
+.sheet-measure .sheet-landscape {
+  width: 9.8in;
 }
 
 /* Screens narrower than a sheet of paper: shrink the preview to fit. */
@@ -297,7 +326,8 @@ body {
 
 /* Long sheets flow onto more pages; keep rows and headings together. */
 @media print {
-  .h-table tr {
+  .h-table tr,
+  .keep-together {
     break-inside: avoid;
   }
   .h-section-title {

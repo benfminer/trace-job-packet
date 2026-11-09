@@ -98,7 +98,8 @@ export function Box({ on, children }: BoxProps) {
   return (
     <span className="h-box">
       <span className={on ? 'h-box-on' : ''}>{on ? '☑' : '☐'}</span>
-      {children && <> {children}</>}
+      {/* Non-breaking space keeps the box on the same line as its label. */}
+      {children && <>{'\u00a0'}{children}</>}
     </span>
   )
 }

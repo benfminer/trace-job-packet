@@ -78,7 +78,7 @@ function WorkSection({ packet }: SectionProps) {
   return (
     <HSection title="Work and volunteer history" note="Start with the most recent. TRACE work sites and volunteering count.">
       {packet.profile.jobs.map((j, i) => (
-        <div key={i} className="mb-2" style={{ breakInside: 'avoid' }}>
+        <div key={i} className="keep-together mb-2">
           <p className="h-small font-bold" style={{ color: '#1e88d2' }}>Job #{i + 1}{i === 0 ? ' (most recent)' : ''}</p>
           <FieldTable rows={[
             [['Employer', j.employer], ['Job title', j.title]],

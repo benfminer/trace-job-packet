@@ -10,3 +10,6 @@ export interface Sheet {
 
 export const sheetClass = (s: Sheet) => 'sheet' + (s.landscape ? ' sheet-landscape' : '')
 export const sheetLabelWidth = (s: Sheet) => (s.landscape ? 'max-w-[11in]' : 'max-w-[8.5in]')
+
+// Printed area inside the @page margins in index.css, in CSS px (96 per inch).
+export const printedPageHeight = (s: Sheet) => (s.landscape ? 7.5 : 10) * 96
