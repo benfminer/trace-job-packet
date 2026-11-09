@@ -18,9 +18,11 @@ interface JobCardProps {
   index: number
   job: Job
   onChange: (key: keyof Job, value: string) => void
+  // Left out when this is the only job, so there's always one card to fill in.
+  onRemove?: () => void
 }
 
-function JobCard({ index, job, onChange }: JobCardProps) {
+function JobCard({ index, job, onChange, onRemove }: JobCardProps) {
   return (
     <Card title={`Job #${index + 1}${index === 0 ? ' (most recent)' : ''}`}>
       <Grid>
@@ -49,6 +51,11 @@ function JobCard({ index, job, onChange }: JobCardProps) {
         <Ideas label="Good ways to say it:" ideas={REASON_IDEAS} onPick={(v) => onChange('reasonLeft', v)} />
       </div>
       <Choice label="OK to contact?" value={job.okToContact} onChange={(v) => onChange('okToContact', v)} options={yesNo} />
+      {onRemove && (
+        <button type="button" onClick={onRemove} className="text-sm font-semibold text-slate-500 underline hover:text-red-700">
+          Remove this job
+        </button>
+      )}
     </Card>
   )
 }
@@ -57,10 +64,18 @@ export function WorkStep() {
   const { p, update } = useProfile()
   const setJob = (i: number, key: keyof Job, v: string) =>
     update((d) => { (d.profile.jobs[i] as Record<keyof Job, string>)[key] = v })
+  // Resume bullets line up with jobs by position, so they go too.
+  const remove = (i: number) => update((d) => {
+    d.profile.jobs.splice(i, 1)
+    d.pages.resume.bullets.splice(i, 1)
+  })
   return (
     <>
       <Tip>Start with the most recent. <b>TRACE work sites and volunteering count.</b> Fill in only what you have.</Tip>
-      {p.jobs.map((job, i) => <JobCard key={i} index={i} job={job} onChange={(k, v) => setJob(i, k, v)} />)}
+      {p.jobs.map((job, i) => (
+        <JobCard key={i} index={i} job={job} onChange={(k, v) => setJob(i, k, v)}
+          onRemove={p.jobs.length > 1 ? () => remove(i) : undefined} />
+      ))}
       <button type="button" onClick={() => update((d) => { d.profile.jobs.push(blankJob()) })}
         className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another job

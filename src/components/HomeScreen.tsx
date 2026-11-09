@@ -1,5 +1,5 @@
 // The packet dashboard: overall progress, About Me first, then a card for every page.
-import { ArrowRight, Check, CircleHelp, Printer } from 'lucide-react'
+import { ArrowRight, Check, CircleHelp, ClipboardCopy, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
 import { PAGES, type PageInfo } from '../data/pages'
 import { fullName, shortDate } from '../data/derive'
@@ -49,6 +49,12 @@ function PageCard({ page, featured }: PageCardProps) {
       <div className={'flex items-center gap-2 ' + (featured ? 'ml-auto' : 'mt-auto border-t border-slate-100 pt-3')}>
         <StatusChip done={status.done} date={status.date} />
         <span className="flex-1" />
+        {page.id === 'appInfo' && (
+          <button type="button" onClick={() => go({ view: 'apply' })} aria-label="Applying now: copy my answers" title="Applying now: copy my answers"
+            className="rounded-md border border-slate-300 bg-white p-2 text-slate-600 shadow-sm transition-colors hover:border-brand hover:text-brand">
+            <ClipboardCopy aria-hidden className="size-5" />
+          </button>
+        )}
         {!featured && (
           <button type="button" onClick={() => go({ view: 'print', page: page.id })} aria-label={`Print ${page.title}`}
             className="rounded-md border border-slate-300 bg-white p-2 text-slate-600 shadow-sm transition-colors hover:border-brand hover:text-brand">

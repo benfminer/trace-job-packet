@@ -49,6 +49,12 @@ describe('save and open', () => {
     expect('companyCityStateZip' in p.pages.coverLetter).toBe(false)
   })
 
+  it('keeps the number of jobs the student left', () => {
+    const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 2, profile: { jobs: [{ employer: 'CVS' }] } })
+    expect(p.profile.jobs).toHaveLength(1)
+    expect(p.profile.jobs[0].employer).toBe('CVS')
+  })
+
   it('keeps an old job address as the street', () => {
     const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 1, profile: { jobs: [{ address: '1 Main St, San Diego' }] } })
     expect(p.profile.jobs[0]).toMatchObject({ address: '1 Main St, San Diego', city: '', state: 'CA', zip: '' })

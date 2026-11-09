@@ -10,6 +10,7 @@ import { CloseDialog } from './components/CloseDialog'
 import { PrintAll } from './components/PrintAll'
 import { HelpPage } from './components/HelpPage'
 import { PaperPage } from './components/PaperPage'
+import { ApplyPage } from './pages/appInfo/ApplyPage'
 
 // Routes live in the URL hash (#/edit/references) so the browser Back button works.
 function readRoute(): Route {
@@ -18,6 +19,7 @@ function readRoute(): Route {
   if (view === 'print-all') return { view: 'printAll' }
   if (view === 'help') return { view: 'help' }
   if (view === 'paper') return { view: 'paper' }
+  if (view === 'apply') return { view: 'apply' }
   return { view: 'home' }
 }
 
@@ -97,6 +99,7 @@ export function App() {
   const View = route.view === 'printAll' ? PrintAll
     : route.view === 'help' ? StaffHelp
     : route.view === 'paper' ? PaperCopiesPage
+    : route.view === 'apply' ? ApplyPage
     : !views ? HomeScreen
     : route.view === 'print' ? (views.Print ?? views.Edit) : views.Edit
 

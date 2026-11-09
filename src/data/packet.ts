@@ -324,6 +324,9 @@ export function loadPacket(raw: unknown): Packet {
   // Older files get migrated here, before fitting.
   if (typeof version !== 'number' || version < 2) splitCoverLetterCity(raw)
   const packet = fit(blankPacket(), raw) as Packet
+  // A new packet starts with 3 blank jobs; keep a file's own count so removed jobs stay removed.
+  const savedJobs = (raw as { profile?: { jobs?: unknown } }).profile?.jobs
+  if (Array.isArray(savedJobs) && savedJobs.length > 0) packet.profile.jobs.length = savedJobs.length
   packet.schemaVersion = SCHEMA_VERSION
   return packet
 }

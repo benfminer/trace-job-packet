@@ -1,8 +1,9 @@
 // Page 03 printed like the handout.
 import { useStore } from '../../data/store'
-import type { Packet, YesNo } from '../../data/packet'
+import { blankJob, type Packet, type YesNo } from '../../data/packet'
 import { availabilitySentence, fullName, shortDate, todayIso } from '../../data/derive'
 import { fullAddress } from '../../data/format'
+import { TRACE_ADDRESS, TRACE_PROGRAM } from '../../data/apply'
 import { Box, Boxes, Callout, FieldTable, HandoutFooter, HandoutHeader, HSection, QuestionTable } from '../../components/handout'
 
 const YN = [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]
@@ -56,8 +57,8 @@ function JobAndSchoolSections({ packet }: SectionProps) {
       </HSection>
       <HSection title="Education">
         <FieldTable rows={[
-          [['Current program', 'TRACE, San Diego Unified'], ['Start date', p.traceStart]],
-          [['Address', '4063 Polk Ave., San Diego, CA 92105'], ["What I'm working on", p.traceWorkingOn]],
+          [['Current program', TRACE_PROGRAM], ['Start date', p.traceStart]],
+          [['Address', TRACE_ADDRESS], ["What I'm working on", p.traceWorkingOn]],
           [['High school', p.hsName], ['Address', fullAddress(p.hsAddress, p.hsCity, p.hsState, p.hsZip)]],
           [['Dates attended', p.hsDates], ['Diploma or certificate?', <Boxes key="cred" options={[{ value: 'diploma', label: 'Diploma' }, { value: 'certificate', label: 'Certificate' }]} selected={p.hsCredential} />]],
           [['Year finished', p.hsYear], ['Highest grade completed', p.highestGrade]],
@@ -75,9 +76,12 @@ function JobAndSchoolSections({ packet }: SectionProps) {
 }
 
 function WorkSection({ packet }: SectionProps) {
+  // Only jobs with something typed in. With none, one blank job to fill in by hand.
+  const filled = packet.profile.jobs.filter((j) => j.employer.trim() || j.title.trim())
+  const jobs = filled.length ? filled : [blankJob()]
   return (
     <HSection title="Work and volunteer history" note="Start with the most recent. TRACE work sites and volunteering count.">
-      {packet.profile.jobs.map((j, i) => (
+      {jobs.map((j, i) => (
         <div key={i} className="keep-together mb-2">
           <p className="h-small font-bold" style={{ color: '#1e88d2' }}>Job #{i + 1}{i === 0 ? ' (most recent)' : ''}</p>
           <FieldTable rows={[

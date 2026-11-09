@@ -78,6 +78,13 @@ export function CheckInfoStep() {
             className="rounded-md border border-brand px-4 py-2 font-semibold text-brand hover:bg-brand/10">Fix in Weekly Availability</button>
         </div>
       )}
+      <Tip>
+        Filling out an application on the computer?{' '}
+        <button type="button" onClick={() => go({ view: 'apply' })} className="font-semibold text-brand underline">
+          Open Applying now
+        </button>{' '}
+        to copy each answer and paste it in.
+      </Tip>
     </>
   )
 }

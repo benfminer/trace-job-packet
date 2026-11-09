@@ -1,10 +1,11 @@
 // Page 02 steps: plan the letter, then read it over.
 import { usePageData } from '../../data/store'
-import { STRENGTHS, coverLetterParagraphs } from '../../data/derive'
+import { STRENGTHS, availabilitySentence, coverLetterParagraphs } from '../../data/derive'
 import { Card, Check, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { LetterBody } from './LetterBody'
 import { SEND_CHECKLIST } from '../../data/options'
 import { AddressFields, type AddressPart } from '../../components/AddressFields'
+import { AvailabilityNote } from '../../components/AvailabilityNote'
 
 const COMPANY_ADDRESS = { street: 'companyStreet', city: 'companyCity', state: 'companyState', zip: 'companyZip' } as const satisfies Record<AddressPart, string>
 
@@ -82,11 +83,16 @@ export function WhyStep() {
   )
 }
 
+// Left blank, the letter uses the Weekly Availability page as it is now.
 export function WhenStep() {
-  const { data: c, set } = usePageData('coverLetter')
+  const { data: c, set, packet } = usePageData('coverLetter')
   return (
-    <TextArea label="I am available to work ..." value={c.whenCanWork} onChange={(v) => set('whenCanWork', v)} rows={2}
-      hint="Copied from your Weekly Availability page. You can change it for this job." />
+    <>
+      <AvailabilityNote />
+      <TextArea label="I am available to work ..." value={c.whenCanWork} onChange={(v) => set('whenCanWork', v)} rows={2}
+        placeholder={availabilitySentence(packet.profile)}
+        hint="Leave it blank to use your Weekly Availability page. Type here only to change it for this job." />
+    </>
   )
 }
 

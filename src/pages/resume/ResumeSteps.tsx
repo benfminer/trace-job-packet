@@ -2,6 +2,7 @@
 import { usePageData } from '../../data/store'
 import { SKILL_IDEAS } from '../../data/resume'
 import { Card, Check, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
+import { AvailabilityNote } from '../../components/AvailabilityNote'
 
 export function GoalStep() {
   const { data: r, set, packet } = usePageData('resume')
@@ -57,6 +58,7 @@ export function FinishStep() {
   return (
     <>
       <Check label="Show my availability at the bottom of my resume" checked={r.showAvailability} onChange={(v) => set('showAvailability', v)} />
+      {r.showAvailability && <AvailabilityNote />}
       <Card title="Before you send it">
         <ul className="list-disc space-y-1 pl-6 text-lg">
           <li>Keep it to one page.</li>

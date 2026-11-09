@@ -1,4 +1,7 @@
+import { ClipboardCopy } from 'lucide-react'
 import { pageInfo } from '../../data/pages'
+import { useStore } from '../../data/store'
+import { btnSecondary } from '../../components/styles'
 import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
@@ -17,5 +20,12 @@ export function AppInfoWizard() {
 }
 
 export function AppInfoPrintView() {
-  return <PrintShell page={page} sheets={PAGE_SHEETS.appInfo} />
+  const { go } = useStore()
+  return (
+    <PrintShell page={page} sheets={PAGE_SHEETS.appInfo} extraButtons={
+      <button type="button" onClick={() => go({ view: 'apply' })} className={btnSecondary}>
+        <ClipboardCopy aria-hidden className="size-5" />Applying now: copy my answers
+      </button>
+    } />
+  )
 }

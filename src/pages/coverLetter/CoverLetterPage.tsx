@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { pageInfo } from '../../data/pages'
 import { useStore } from '../../data/store'
-import { availabilitySentence, wordFileName } from '../../data/derive'
+import { wordFileName } from '../../data/derive'
 import { saveFile } from '../../data/saveLoad'
 import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
@@ -20,14 +20,13 @@ function usePrefill() {
     update((d) => {
       const c = d.pages.coverLetter
       if (c.prefilled) return
-      const [job1, job2] = d.profile.jobs
-      c.place1 ||= job1.employer
-      c.did1 ||= job1.duties
-      c.place2 ||= job2.employer
-      c.did2 ||= job2.duties
+      const [job1, job2] = d.profile.jobs.filter((j) => j.employer)
+      c.place1 ||= job1?.employer ?? ''
+      c.did1 ||= job1?.duties ?? ''
+      c.place2 ||= job2?.employer ?? ''
+      c.did2 ||= job2?.duties ?? ''
       if (!c.strengths.length) c.strengths = d.profile.strengths.slice(0, 2)
       c.doWell ||= d.profile.doWell
-      c.whenCanWork ||= availabilitySentence(d.profile)
       c.prefilled = true
     })
   }, [done, update])

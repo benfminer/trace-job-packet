@@ -70,8 +70,9 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
 
       <Topic title="How the pages fit together">
         <p>
-          Start with <b>About Me</b>. Name, contact info, school, jobs, strengths, and availability are typed once there and
-          fill in the resume, cover letter, application sheet, and other pages.
+          Start with <b>About Me</b>, then <b>Weekly Availability</b> (page 5). Name, contact info, school, jobs, and strengths
+          are typed once in About Me, and the schedule once on page 5. Both fill in the resume, cover letter, application
+          sheet, and other pages.
         </p>
         <p>
           Pages can be done in any order. Each page ends on a <b>Review & print</b> screen. Check <b>This page is done</b>

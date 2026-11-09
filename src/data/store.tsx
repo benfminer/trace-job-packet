@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { Packet } from './packet'
 
-export type Route = { view: 'home' | 'printAll' | 'help' | 'paper' } | { view: 'edit' | 'print'; page: string }
+export type Route = { view: 'home' | 'printAll' | 'help' | 'paper' | 'apply' } | { view: 'edit' | 'print'; page: string }
 
 export type Store = {
   packet: Packet
