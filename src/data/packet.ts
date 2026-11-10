@@ -59,7 +59,8 @@ export type Reference = {
 export type ReferenceUse = { date: string; job: string; listed: string; toldThem: boolean }
 
 // started: the wizard has been used. done: checked off on the Review & print screen.
-export type PageStatus = { started: boolean; done: boolean; date: string }
+// skipped: staff decided this page doesn't apply to this student. Its answers are kept.
+export type PageStatus = { started: boolean; done: boolean; date: string; skipped: boolean }
 
 export type DocRow = { have: boolean; where: string; expires: string }
 
@@ -287,7 +288,7 @@ export function blankPacket() {
       },
     },
 
-    status: Object.fromEntries(PAGE_IDS.map((id) => [id, { started: false, done: false, date: '' }])) as Record<PageId, PageStatus>,
+    status: Object.fromEntries(PAGE_IDS.map((id) => [id, { started: false, done: false, date: '', skipped: false }])) as Record<PageId, PageStatus>,
   }
 }
 

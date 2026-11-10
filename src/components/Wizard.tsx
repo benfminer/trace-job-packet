@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { useStore } from '../data/store'
-import type { PageInfo } from '../data/pages'
+import { canSkip, isSkipped, type PageInfo } from '../data/pages'
 import { todayIso } from '../data/derive'
 import { PageBand, ProgressBar } from './PageBand'
 
@@ -72,6 +72,11 @@ export function Wizard({ page, steps, finishTo = 'print' }: WizardProps) {
     go({ view: 'edit', page: page.id, step: i })
   }
   const step = steps[index]
+  const status = packet.status[page.id]
+  const skip = () => {
+    update((d) => { d.status[page.id].skipped = true })
+    go({ view: 'home' })
+  }
   const isLast = index === steps.length - 1
   // One-step pages (the tracker) skip the step list and use the full width.
   const multi = steps.length > 1
@@ -80,7 +85,7 @@ export function Wizard({ page, steps, finishTo = 'print' }: WizardProps) {
     markStarted()
     if (finishTo === 'print') return go({ view: 'print', page: page.id })
     // Pages with no print view count as done when the last step is finished.
-    update((d) => { d.status[page.id] = { started: true, done: true, date: todayIso() } })
+    update((d) => { d.status[page.id] = { started: true, done: true, date: todayIso(), skipped: false } })
     go({ view: 'home' })
   }
 
@@ -103,6 +108,15 @@ export function Wizard({ page, steps, finishTo = 'print' }: WizardProps) {
         )}
 
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+          {isSkipped(packet.status, page.id) && (
+            <div className="flex flex-wrap items-center gap-3 border-b border-amber-200 bg-amber-50 px-5 py-3 text-slate-800 sm:px-8">
+              <p className="flex-1"><b>This page is skipped.</b> It's left off the map count and out of Print all.</p>
+              <button type="button" onClick={() => update((d) => { d.status[page.id].skipped = false })}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 shadow-sm hover:border-brand hover:text-brand">
+                Bring it back
+              </button>
+            </div>
+          )}
           <div key={index} className="anim-slide space-y-5 p-5 sm:p-8">
             <h2 className="screen-title text-3xl font-semibold text-slate-900">{step.title}</h2>
             {step.intro && <div className="text-lg text-slate-600">{step.intro}</div>}
@@ -120,6 +134,13 @@ export function Wizard({ page, steps, finishTo = 'print' }: WizardProps) {
               <ArrowRight aria-hidden className="size-5 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
+          {canSkip(page.id) && !status.done && !status.skipped && (
+            <p className="border-t border-slate-100 px-5 py-3 text-slate-600 sm:px-8">
+              Doesn't apply to this student?{' '}
+              <button type="button" onClick={skip} className="font-semibold text-brand underline">Skip this page</button>
+              . You can bring it back any time.
+            </p>
+          )}
         </section>
       </div>
     </>

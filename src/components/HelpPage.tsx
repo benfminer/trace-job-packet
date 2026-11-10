@@ -85,6 +85,23 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
         <p>Dashed "idea" buttons drop a suggestion into the box above them. The student can change it after.</p>
       </Topic>
 
+      <Topic title="Skipping a page">
+        <p>
+          If a page doesn't apply to a student (for example, <b>Benefits and Work</b> for a student who gets no
+          benefits), click <b>Skip</b> on its card on the map, or <b>Skip this page</b> at the bottom of the page itself.
+          The stop turns gray, the road passes it, and it's left out of the page count and Print all. The cover page
+          shows "N/A" for it.
+        </p>
+        <p>
+          Click <b>Bring back</b> to undo it. Anything already typed on the page is kept. About Me and Weekly
+          Availability can't be skipped, because the other pages are filled in from them.
+        </p>
+        <p>
+          Skip a page because it truly doesn't apply, not because it's hard. Disclosure is worth doing even when the
+          answer is "I don't plan to tell an employer," because the page is how the student makes that choice.
+        </p>
+      </Topic>
+
       <Topic title="Practice job or real job">
         <p>
           The <b>job card</b> near the top of the Home screen holds the one job the packet is aimed at. A new packet

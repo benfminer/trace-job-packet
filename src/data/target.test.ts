@@ -12,7 +12,7 @@ function applying() {
   p.pages.interview.answers.whyHere = 'close to home'
   p.pages.interview.answers.strengths = 'reliable'
   p.pages.interview.interviewer = 'Ms. Diaz'
-  p.status.coverLetter = { started: true, done: true, date: '2026-11-09' }
+  p.status.coverLetter = { started: true, done: true, date: '2026-11-09', skipped: false }
   return p
 }
 
@@ -43,7 +43,7 @@ describe('startNewApplication', () => {
     expect(p.pages.interview.answers).toMatchObject({ whyHere: '', strengths: 'reliable' })
     expect(p.pages.interview.interviewer).toBe('')
     expect(p.profile.strengths).toEqual(['Reliable'])
-    expect(p.status.coverLetter).toEqual({ started: true, done: false, date: '' })
+    expect(p.status.coverLetter).toEqual({ started: true, done: false, date: '', skipped: false })
     expect(p.pages.tracker.rows[0].company).toBe('Target')
   })
 

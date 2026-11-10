@@ -23,7 +23,8 @@ export function PrintShell({ page, sheets, extraButtons, note }: PrintShellProps
 
   const toggleDone = (done: boolean) =>
     update((d) => {
-      d.status[page.id] = { started: true, done, date: done ? todayIso() : '' }
+      // Finishing a page brings it back if it was skipped.
+      d.status[page.id] = { started: true, done, date: done ? todayIso() : '', skipped: done ? false : d.status[page.id].skipped }
     })
 
   // Marks this page done and moves on, so nobody has to hunt for what's next.

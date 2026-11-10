@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, Check, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
-import { PAGES } from '../data/pages'
+import { PAGES, isSkipped } from '../data/pages'
 import { fullName, shortDate, todayIso } from '../data/derive'
 import { PAGE_SHEETS } from '../pages/sheets'
 import { Box, Callout, FieldTable, HandoutFooter, HSection } from './handout'
@@ -38,7 +38,7 @@ function CoverSheet() {
               return (
                 <tr key={p.id}>
                   <td className="center">{p.num}</td><th>{p.title}</th><td>{p.purpose}</td>
-                  <td className="center"><Box on={s.done} /></td><td>{shortDate(s.date)}</td>
+                  <td className="center">{isSkipped(packet.status, p.id) ? 'N/A' : <Box on={s.done} />}</td><td>{shortDate(s.date)}</td>
                 </tr>
               )
             })}
@@ -150,6 +150,9 @@ export function PrintAll() {
                 <label key={p.id} className={pick}>
                   <input type="checkbox" className="size-5 accent-brand" checked={picked.includes(p.id)} onChange={(e) => toggle(p.id, e.target.checked)} />
                   <span className="flex-1">{p.num}. {p.title}</span>
+                  {isSkipped(packet.status, p.id) && (
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">Skipped</span>
+                  )}
                   {packet.status[p.id].done && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-800 ring-1 ring-green-200">
                       <Check aria-hidden className="size-3" />Done

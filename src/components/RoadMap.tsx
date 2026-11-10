@@ -1,9 +1,9 @@
 // Home's map: one winding road with a stop for every packet page, in working order.
 // Done stops are checked, the road is filled in up to "you are here", and the rest is still ahead.
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, ClipboardCopy, Flag, MailCheck, MapPin, Printer, type LucideIcon } from 'lucide-react'
+import { Check, ClipboardCopy, Flag, MailCheck, MapPin, Minus, Printer, type LucideIcon } from 'lucide-react'
 import { useStore, type Route } from '../data/store'
-import { GROUPS, nextPage, pageInfo, type PageInfo } from '../data/pages'
+import { GROUPS, canSkip, isSkipped, nextPage, pageInfo, type PageInfo } from '../data/pages'
 import type { PageStatus } from '../data/packet'
 import { shortDate } from '../data/derive'
 import { PAGE_ICONS } from './icons'
@@ -46,6 +46,7 @@ function roadPath(points: Point[]) {
 const chip = 'rounded-full px-2.5 py-0.5 text-sm font-semibold '
 
 function StatusChip({ status }: { status: PageStatus }) {
+  if (status.skipped && !status.done) return <span className={chip + 'bg-slate-100 text-slate-600'}>Skipped</span>
   if (status.done) {
     return <span className={chip + 'inline-flex items-center gap-1 bg-green-50 text-green-800 ring-1 ring-green-200'}><Check aria-hidden className="size-3.5" />Done {shortDate(status.date)}</span>
   }
@@ -87,7 +88,7 @@ const nodeBase = 'relative grid place-items-center rounded-full border-[3px] sha
 const cardBase = 'rounded-xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow '
 
 export function RoadMap() {
-  const { packet, go } = useStore()
+  const { packet, go, update } = useStore()
   const box = useRef<HTMLOListElement>(null)
   const nodes = useRef<(HTMLElement | null)[]>([])
   const [points, setPoints] = useState<Point[]>([])
@@ -155,7 +156,7 @@ export function RoadMap() {
               node={<span className={nodeBase + 'size-16 ' + (all ? 'border-amber-400 bg-amber-400 text-slate-900' : 'border-slate-300 bg-white text-slate-400')}><Flag className="size-7" /></span>}>
               <div className={cardBase + (all ? 'border-amber-300' : 'border-dashed border-slate-300')}>
                 <h3 className="text-lg font-semibold tracking-tight text-slate-900">{all ? 'Packet complete!' : 'Finish line'}</h3>
-                <p className="text-slate-600">{all ? 'Every page is done. Print the whole folder.' : 'When every page is done, print the whole folder.'}</p>
+                <p className="text-slate-600">{all ? 'Every page on your road is done. Print the whole folder.' : 'When every page is done, print the whole folder.'}</p>
                 {all && <button type="button" onClick={() => go({ view: 'printAll' })} className={btnPrimary + ' mt-3'}><Printer aria-hidden className="size-5" />Print all</button>}
               </div>
             </StopRow>
@@ -181,8 +182,11 @@ export function RoadMap() {
         const { page } = row
         const status = packet.status[page.id]
         const here = page.id === next?.id
-        const Icon = status.done ? Check : PAGE_ICONS[page.id]
+        const skipped = isSkipped(packet.status, page.id)
+        const setSkipped = (on: boolean) => update((d) => { d.status[page.id].skipped = on })
+        const Icon = status.done ? Check : skipped ? Minus : PAGE_ICONS[page.id]
         const look = status.done ? 'border-green-600 bg-green-600 text-white'
+          : skipped ? 'border-slate-300 bg-slate-100 text-slate-400'
           : here ? 'border-brand bg-brand text-white'
           : status.started ? 'border-brand bg-white text-brand'
           : 'border-slate-300 bg-white text-slate-400'
@@ -190,28 +194,37 @@ export function RoadMap() {
         return (
           <StopRow key={page.id} index={i} nodeRef={ref} here={here} nodeLabel={`Open ${page.title}`} onOpen={open}
             node={<span className={nodeBase + 'size-14 ' + look}><Icon key={String(status.done)} className={'size-6' + (status.done ? ' road-pop' : '')} strokeWidth={status.done ? 3 : 2} /></span>}>
-            <article className={cardBase + (here ? 'border-brand ring-4 ring-brand/10' : 'border-slate-200 hover:border-slate-300')}>
+            <article className={cardBase + (here ? 'border-brand ring-4 ring-brand/10' : skipped ? 'border-dashed border-slate-300 bg-slate-50' : 'border-slate-200 hover:border-slate-300')}>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">{page.num ? `Page ${page.num}` : 'Fill this in first'}</p>
                 {here && (
                   <span className={chip + 'inline-flex items-center gap-1 bg-brand text-white'}><MapPin aria-hidden className="size-3.5" />You are here</span>
                 )}
               </div>
-              <h3 className="mt-0.5 text-lg font-semibold tracking-tight text-slate-900">{page.title}</h3>
-              <p className="text-slate-600">{page.purpose}</p>
+              <h3 className={'mt-0.5 text-lg font-semibold tracking-tight ' + (skipped ? 'text-slate-500' : 'text-slate-900')}>{page.title}</h3>
+              <p className="text-slate-600">{skipped ? "Doesn't apply to this student." : page.purpose}</p>
               <div className="mt-3 flex items-center gap-2">
                 <StatusChip status={status} />
                 <span className="flex-1" />
+                {skipped && <button type="button" onClick={() => setSkipped(false)} className={btnSecondary + ' py-1.5'}>Bring back</button>}
+                {canSkip(page.id) && !status.done && !skipped && (
+                  <button type="button" onClick={() => setSkipped(true)} aria-label={`Skip ${page.title}`}
+                    className="px-1 text-sm font-semibold text-slate-500 underline hover:text-brand">
+                    Skip
+                  </button>
+                )}
                 {/* About Me has nothing to print. */}
-                {page.num && (
+                {!skipped && page.num && (
                   <button type="button" onClick={() => go({ view: 'print', page: page.id })} aria-label={`Print ${page.title}`}
                     className="rounded-md border border-slate-300 bg-white p-2 text-slate-600 shadow-sm transition-colors hover:border-brand hover:text-brand">
                     <Printer aria-hidden className="size-5" />
                   </button>
                 )}
-                <button type="button" onClick={open} className={(here ? btnPrimary : btnSecondary) + ' py-1.5'}>
-                  {status.done ? 'Edit' : status.started ? 'Continue' : 'Start'}
-                </button>
+                {!skipped && (
+                  <button type="button" onClick={open} className={(here ? btnPrimary : btnSecondary) + ' py-1.5'}>
+                    {status.done ? 'Edit' : status.started ? 'Continue' : 'Start'}
+                  </button>
+                )}
               </div>
             </article>
           </StopRow>

@@ -31,8 +31,23 @@ export const pageInfo = (id: PageId) => PAGES.find((p) => p.id === id)!
 
 export const WORK_ORDER = GROUPS.flatMap((g) => g.ids).map(pageInfo)
 
-// The next page that isn't done yet, starting after `after` and wrapping around. Undefined when all are done.
-export function nextPage(status: Record<PageId, { done: boolean }>, after?: PageId) {
+type Statuses = Record<PageId, { done: boolean; skipped: boolean }>
+
+// About Me and Weekly Availability fill in other pages, so they can't be skipped.
+export const canSkip = (id: PageId) => id !== 'about' && id !== 'availability'
+
+// A skipped page is left out of the count, the road, and Print all until it's brought back.
+export const isSkipped = (status: Statuses, id: PageId) => status[id].skipped && !status[id].done
+
+// The next page that isn't done or skipped, starting after `after` and wrapping around. Undefined when none are left.
+export function nextPage(status: Statuses, after?: PageId) {
   const start = after ? WORK_ORDER.findIndex((p) => p.id === after) + 1 : 0
-  return [...WORK_ORDER.slice(start), ...WORK_ORDER.slice(0, start)].find((p) => p.id !== after && !status[p.id].done)
+  return [...WORK_ORDER.slice(start), ...WORK_ORDER.slice(0, start)]
+    .find((p) => p.id !== after && !status[p.id].done && !isSkipped(status, p.id))
+}
+
+// "9 of 11 pages done": skipped pages don't count either way.
+export function progress(status: Statuses) {
+  const active = PAGES.filter((p) => !isSkipped(status, p.id))
+  return { done: active.filter((p) => status[p.id].done).length, total: active.length }
 }

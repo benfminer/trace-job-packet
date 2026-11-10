@@ -124,6 +124,6 @@ export function samplePacket(): Packet {
     { date: '2026-10-20', company: 'Target', title: 'Stocker', how: 'Online', contact: '', followUp: '2026-10-27', result: 'waiting' },
   ]
 
-  p.status.about = { started: true, done: true, date: '2026-11-05' }
+  p.status.about = { started: true, done: true, date: '2026-11-05', skipped: false }
   return p
 }

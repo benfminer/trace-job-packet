@@ -17,7 +17,7 @@ function filledPacket() {
   p.profile.availability.Monday.earliest = '2:00 PM'
   p.pages.references.people[2].saidYes = true
   p.target.company = 'Smart & Final'
-  p.status.references = { started: true, done: true, date: '2026-11-05' }
+  p.status.references = { started: true, done: true, date: '2026-11-05', skipped: false }
   return p
 }
 

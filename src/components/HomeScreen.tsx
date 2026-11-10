@@ -1,7 +1,7 @@
 // The packet dashboard: progress and what's next, the job being applied for, then the road map of pages.
 import { ArrowRight, Briefcase, CircleHelp, MapPin, Pencil, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
-import { PAGES, nextPage } from '../data/pages'
+import { nextPage, progress } from '../data/pages'
 import { fullName, targetLabel } from '../data/derive'
 import { RoadMap } from './RoadMap'
 import { NewApplicationButton, PracticeBadge } from './JobFields'
@@ -44,7 +44,7 @@ function TargetCard() {
 export function HomeScreen() {
   const { packet, go } = useStore()
   const name = fullName(packet.profile)
-  const doneCount = PAGES.filter((p) => packet.status[p.id].done).length
+  const { done: doneCount, total } = progress(packet.status)
   const next = nextPage(packet.status)
   return (
     <>
@@ -55,13 +55,13 @@ export function HomeScreen() {
         <div className="-mt-14 rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-xl">
           <div className="flex flex-wrap items-center gap-5">
             <p className="text-3xl font-semibold tracking-tight tabular-nums">
-              {doneCount} <span className="text-base font-medium text-slate-500">of {PAGES.length} pages done</span>
+              {doneCount} <span className="text-base font-medium text-slate-500">of {total} pages done</span>
             </p>
             <div className="min-w-48 flex-1">
               <div className="mb-2 flex justify-between text-sm text-slate-600">
-                <span>Overall progress</span><span>{Math.round((doneCount / PAGES.length) * 100)}%</span>
+                <span>Overall progress</span><span>{Math.round((doneCount / total) * 100)}%</span>
               </div>
-              <ProgressBar value={doneCount / PAGES.length} label="Pages done" />
+              <ProgressBar value={doneCount / total} label="Pages done" />
             </div>
             <button type="button" onClick={() => go({ view: 'help' })} className={secondary}>
               <CircleHelp aria-hidden className="size-5" />Help for staff

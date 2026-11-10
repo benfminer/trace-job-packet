@@ -1,8 +1,8 @@
 // A small sideways copy of Home's road, for the top of a page: every packet page as a dot, a pin on
 // the one you're on. The pin slides along the road when you move to another page.
-import { Check } from 'lucide-react'
+import { Check, Minus } from 'lucide-react'
 import { useStore } from '../data/store'
-import { WORK_ORDER, nextPage } from '../data/pages'
+import { WORK_ORDER, isSkipped, nextPage } from '../data/pages'
 import type { PageId } from '../data/packet'
 import { PAGE_ICONS } from './icons'
 
@@ -49,14 +49,16 @@ export function RoadStrip({ here, big }: RoadStripProps) {
             {WORK_ORDER.map((p, i) => {
               const status = packet.status[p.id as PageId]
               const current = i === hereIndex
-              const Icon = status.done ? Check : PAGE_ICONS[p.id]
+              const skipped = isSkipped(packet.status, p.id)
+              const Icon = status.done ? Check : skipped ? Minus : PAGE_ICONS[p.id]
               return (
                 <li key={p.id} className="grid place-items-center" style={{ transform: `translateY(${y(i) - H / 2}px)` }}>
                   <button type="button" onClick={() => go({ view: 'edit', page: p.id })} title={p.title}
-                    aria-label={p.title + (status.done ? ' (done)' : '')} aria-current={current ? 'page' : undefined}
+                    aria-label={p.title + (status.done ? ' (done)' : skipped ? ' (skipped)' : '')} aria-current={current ? 'page' : undefined}
                     className={`road-node grid ${size} place-items-center rounded-full border-2 transition-colors ` +
                       (current ? 'border-amber-400 bg-amber-400 text-slate-900 ring-4 ring-amber-400/30'
                         : status.done ? 'border-white bg-white text-green-700'
+                        : skipped ? 'border-dashed border-white/30 bg-[#4032c8] text-white/40 hover:text-white'
                         : 'border-white/40 bg-[#4032c8] text-white/80 hover:border-white hover:text-white')}>
                     <Icon key={String(status.done)} aria-hidden className={(big ? 'size-5' : 'size-4') + (status.done ? ' road-pop' : '')} strokeWidth={status.done ? 3 : 2} />
                   </button>
