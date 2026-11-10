@@ -1,0 +1,74 @@
+// The prompts a student can copy into Gemini to clean up their own wording.
+// The app has no AI in it. The student chooses to paste this into Gemini, then pastes the result back.
+// The rules are strict on purpose: fix the writing, never add to it, and keep it sounding like the student.
+import type { Packet } from './packet'
+import { coverLetterParagraphs } from './derive'
+
+const RULES = `RULES
+1. Fix grammar, spelling, punctuation, and capital letters.
+2. Do NOT add anything new. No new skills, duties, tools, numbers, awards, jobs, or results. If it is not written below, it does not go in.
+3. Do NOT make anything sound bigger than it is. "Stocked shelves" stays "Stocked shelves". It does not become "Managed inventory".
+4. Keep my own simple words and the same reading level. It has to sound like me, a real person, and not like AI wrote it. Do not use words like passionate, dedicated, motivated, leverage, utilize, dynamic, detail-oriented, proven, results-driven, thrive, or eager. Do not use dashes as pauses, and do not use semicolons.
+5. Keep it about the same length. Do not add sentences.
+6. If a part is already fine, give it back exactly as it is.
+7. If something is unclear, do not guess. Leave it the way I wrote it and ask me about it at the end.
+8. Do not change names of people, companies, job titles, dates, phone numbers, or email addresses.`
+
+const ANSWER_END = `After that, add a part called WHAT I CHANGED. List every change in plain words, one per line, so my teacher and I can check each one. If you changed nothing, say that.
+Then add a part called QUESTIONS, only if something was unclear.`
+
+// The parts of the resume that are the student's own sentences: the goal, and the bullets for each job.
+export function resumeParts(packet: Packet) {
+  const r = packet.pages.resume
+  const jobs = packet.profile.jobs
+    .map((j, i) => ({ j, i }))
+    .filter(({ j }) => j.employer.trim())
+    .map(({ j, i }, n) => ({
+      index: i,
+      label: `JOB ${n + 1}: ${[j.title.trim(), j.employer.trim()].filter(Boolean).join(' at ')}`,
+      dates: [j.start, j.end].filter(Boolean).join(' to '),
+      bullets: (r.bullets[i] ?? '').split('\n').map((b) => b.trim()).filter(Boolean),
+    }))
+  return { goal: r.objective.trim(), jobs }
+}
+
+// Empty when there is nothing written yet to polish.
+export function resumePrompt(packet: Packet) {
+  const { goal, jobs } = resumeParts(packet)
+  const written = jobs.filter((j) => j.bullets.length)
+  if (!goal && !written.length) return ''
+  const parts = [
+    goal && `[MY GOAL]\n${goal}`,
+    ...written.map((j) => `[${j.label}${j.dates ? ` (${j.dates})` : ''}]\n${j.bullets.join('\n')}`),
+  ].filter(Boolean)
+  return `I am a student in a job-readiness program. I wrote the resume wording below myself. Your only job is to clean up my writing. You are an editor, not a writer.
+
+${RULES}
+9. Under each job, every line is one bullet point. Start each one with an action word, like Stocked, Helped, or Cleaned. Use the past tense, unless the dates say "Present". Keep the same number of bullet points, in the same order.
+
+HOW TO ANSWER
+Give me back the same parts, with the same [LABELS], in the same order. Use plain text with no bold and no bullet symbols. Put each bullet point on its own line.
+${ANSWER_END}
+
+MY RESUME WORDING
+
+${parts.join('\n\n')}
+`
+}
+
+export function letterPrompt(packet: Packet) {
+  return `I am a student in a job-readiness program. I wrote the cover letter below myself. Your only job is to clean up my writing. You are an editor, not a writer.
+
+${RULES}
+9. Too many of my sentences start with "I". Change how some of them start so the letter reads smoothly, without changing what they say.
+10. Keep the same paragraphs, in the same order. Keep it short enough to fit on one page.
+
+HOW TO ANSWER
+Give me back only the paragraphs of the letter, under the label [MY LETTER], with a blank line between paragraphs. Use plain text with no bold. Do not add a greeting like "Dear" or an ending like "Sincerely". My letter already has those.
+${ANSWER_END}
+
+[MY LETTER]
+
+${coverLetterParagraphs(packet).join('\n\n')}
+`
+}

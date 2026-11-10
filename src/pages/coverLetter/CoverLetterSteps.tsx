@@ -6,6 +6,9 @@ import { LetterBody } from './LetterBody'
 import { SEND_CHECKLIST } from '../../data/options'
 import { JobFields, PracticeNote } from '../../components/JobFields'
 import { AvailabilityNote } from '../../components/AvailabilityNote'
+import { Polish } from '../../components/Polish'
+import { btnSecondary } from '../../components/styles'
+import { letterPrompt } from '../../data/polish'
 
 // The job is typed once and shared (Home has the same card).
 export function JobStep() {
@@ -84,10 +87,34 @@ export function WhenStep() {
   )
 }
 
+// Optional: smooth out the letter with Gemini, then paste the final wording back.
+export function PolishStep() {
+  const { data: c, set, packet } = usePageData('coverLetter')
+  return (
+    <Polish prompt={letterPrompt(packet)} emptyNote="">
+      <TextArea label="My final letter" value={c.finalText} onChange={(v) => set('finalText', v)} rows={10}
+        hint="Paste the paragraphs under MY LETTER. Leave out the greeting and Sincerely. Your letter already has those." />
+      {c.finalText.trim() && <FinalLetterNote />}
+    </Polish>
+  )
+}
+
+// A pasted final letter replaces the built one, so later changes to the earlier steps would not show.
+function FinalLetterNote() {
+  const { set } = usePageData('coverLetter')
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50/70 px-4 py-3 text-slate-800">
+      <p className="min-w-56 flex-1"><b>Your letter now uses your final wording.</b> If you change an earlier step, it won't show up until you take the final letter out.</p>
+      <button type="button" onClick={() => set('finalText', '')} className={btnSecondary}>Go back to the built letter</button>
+    </div>
+  )
+}
+
 export function ReadItStep() {
   const { data: c, set, packet } = usePageData('coverLetter')
   return (
     <>
+      {c.finalText.trim() && <FinalLetterNote />}
       <div className="rounded-xl border border-slate-200 bg-white p-5 font-serif text-lg leading-relaxed">
         <LetterBody packet={packet} paragraphs={coverLetterParagraphs(packet)} />
       </div>

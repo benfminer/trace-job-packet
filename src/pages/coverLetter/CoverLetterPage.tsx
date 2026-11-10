@@ -9,7 +9,7 @@ import { PAGE_SHEETS } from '../sheets'
 import { WordButton } from '../../components/WordButton'
 import { PracticeNote } from '../../components/JobFields'
 import { logTarget } from '../../data/target'
-import { ExperienceStep, JobStep, ReadItStep, StrengthsStep, WhenStep, WhyStep } from './CoverLetterSteps'
+import { ExperienceStep, JobStep, PolishStep, ReadItStep, StrengthsStep, WhenStep, WhyStep } from './CoverLetterSteps'
 
 const page = pageInfo('coverLetter')
 
@@ -43,6 +43,7 @@ export function CoverLetterWizard() {
       { title: 'My strengths', content: <StrengthsStep /> },
       { title: 'Why this company', content: <WhyStep /> },
       { title: 'When I can work', content: <WhenStep /> },
+      { title: 'Polish it (optional)', intro: 'Use Gemini to fix spelling and grammar and make it read better. Skip this step if you like your letter the way it is.', content: <PolishStep /> },
       { title: 'Read it over', intro: 'Read your letter out loud. Go back to any step to change it.', content: <ReadItStep /> },
     ]} />
   )

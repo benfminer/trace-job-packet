@@ -25,7 +25,7 @@ export function logTarget(d: Packet) {
 export function startNewApplication(d: Packet) {
   logTarget(d)
   d.target = { ...blankTarget(), practice: false }
-  Object.assign(d.pages.coverLetter, { why: '', whenCanWork: '', letterDate: '', checklist: [] })
+  Object.assign(d.pages.coverLetter, { why: '', whenCanWork: '', letterDate: '', checklist: [], finalText: '' })
   Object.assign(d.pages.appInfo, { workedHereBefore: '', workedHereWhen: '', knowAnyone: '' })
   Object.assign(d.pages.interview, { interviewer: '', talkedAbout: '', howCompanyDate: '', wentWell: '', practiceNext: '' })
   d.pages.interview.answers.whyHere = ''

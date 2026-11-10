@@ -283,6 +283,8 @@ export function blankPacket() {
         whenCanWork: '',
         letterDate: '',
         checklist: [] as string[],
+        // The student's own final wording for the body of the letter. When filled in, it replaces the built letter.
+        finalText: '',
         // Set after the first visit copies About Me answers in, so cleared fields stay cleared.
         prefilled: false,
       },

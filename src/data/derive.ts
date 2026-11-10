@@ -81,10 +81,28 @@ export const strengthPhrase = (s: string) => STRENGTH_PHRASES[s.trim().toLowerCa
 const lowerFirst = (s: string) => s.trim().replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase())
 const noEndPeriod = (s: string) => s.trim().replace(/[.\s]+$/, '')
 
-// The body paragraphs of the cover letter, following the template on page 02.
+// Wording pasted back after polishing, split into paragraphs. Only the body is kept: a label, greeting,
+// sign-off, or Gemini's notes pasted along with it are dropped.
+export function finalLetterParagraphs(text: string) {
+  const clean = text.replace(/\*\*/g, '').replace(/^\s*\[?MY LETTER\]?:?\s*$/im, '').trim()
+  if (!clean) return []
+  const blocks = (/\n\s*\n/.test(clean) ? clean.split(/\n\s*\n/) : clean.split('\n'))
+    .map((b) => b.replace(/\s*\n\s*/g, ' ').trim()).filter(Boolean)
+  const isEnd = (b: string) => b.length < 60 && /^\[?(sincerely|best regards|regards|thank you|what i changed|questions)\b/i.test(b)
+  const end = blocks.findIndex(isEnd)
+  return (end === -1 ? blocks : blocks.slice(0, end)).filter((b) => !(b.length < 60 && /^dear\b/i.test(b)))
+}
+
+// "being reliable", "being a team player": strengths written to follow "My strengths are".
+const beingPhrase = (s: string) => `being ${strengthPhrase(s)}`
+
+// The body paragraphs of the cover letter. They start from the template on page 02, with the sentence
+// openings varied so they don't all begin with "I". A final letter the student pasted in wins.
 export function coverLetterParagraphs(packet: Packet) {
   const p = packet.profile
   const c = packet.pages.coverLetter
+  const final = finalLetterParagraphs(c.finalText)
+  if (final.length) return final
   const t = packet.target
   const name = fullName(p) || '[Your Name]'
   const job = t.title || '[Job Title]'
@@ -96,12 +114,16 @@ export function coverLetterParagraphs(packet: Packet) {
   const p2parts: string[] = []
   if (c.experienceWith) p2parts.push(`I have experience ${lowerFirst(noEndPeriod(c.experienceWith))}.`)
   if (c.place1 && c.did1) p2parts.push(`At ${c.place1}, I ${lowerFirst(noEndPeriod(c.did1))}.`)
-  if (c.place2 && c.did2) p2parts.push(`At ${c.place2}, I ${lowerFirst(noEndPeriod(c.did2))}.`)
-  const strengths = c.strengths.filter(Boolean).map(strengthPhrase)
-  if (strengths.length && c.doWell) {
-    p2parts.push(`I am ${joinList(strengths)}, and I ${lowerFirst(noEndPeriod(c.doWell))}.`)
-  } else if (strengths.length) {
-    p2parts.push(`I am ${joinList(strengths)}.`)
+  if (c.place2 && c.did2) {
+    // After a first place, the second one turns around so two sentences in a row don't match.
+    p2parts.push(c.place1 && c.did1 ? `I also ${lowerFirst(noEndPeriod(c.did2))} at ${c.place2}.` : `At ${c.place2}, I ${lowerFirst(noEndPeriod(c.did2))}.`)
+  }
+  const picked = c.strengths.filter(Boolean)
+  const strengths = picked.length === 1 ? `One of my strengths is ${beingPhrase(picked[0])}` : `My strengths are ${joinList(picked.map(beingPhrase))}`
+  if (picked.length && c.doWell) {
+    p2parts.push(`${strengths}, and I ${lowerFirst(noEndPeriod(c.doWell))}.`)
+  } else if (picked.length) {
+    p2parts.push(`${strengths}.`)
   } else if (c.doWell) {
     p2parts.push(`I ${lowerFirst(noEndPeriod(c.doWell))}.`)
   }

@@ -8,7 +8,7 @@ import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
 import { WordButton } from '../../components/WordButton'
-import { ExperienceStep, FinishStep, GoalStep, SkillsStep } from './ResumeSteps'
+import { ExperienceStep, FinishStep, GoalStep, PolishStep, SkillsStep } from './ResumeSteps'
 
 const page = pageInfo('resume')
 
@@ -34,6 +34,7 @@ export function ResumeWizard() {
       { title: 'My goal', intro: 'Your resume uses your About Me answers. Here you add a few more things.', content: <GoalStep /> },
       { title: 'My skills', content: <SkillsStep /> },
       { title: 'What I did at each job', content: <ExperienceStep /> },
+      { title: 'Polish it (optional)', intro: 'Use Gemini to fix spelling and grammar. Skip this step if you like your wording the way it is.', content: <PolishStep /> },
       { title: 'Finishing touches', content: <FinishStep /> },
     ]} />
   )

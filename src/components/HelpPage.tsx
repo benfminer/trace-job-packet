@@ -124,6 +124,27 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
         </p>
       </Topic>
 
+      <Topic title="Polishing with Gemini (optional)">
+        <p>
+          The resume and cover letter each have a <b>Polish it</b> step. This site has no AI in it. The step gives the
+          student a set of instructions to copy into <b>Gemini</b> with their school Google account, along with their own
+          wording. It is the student's choice to use it.
+        </p>
+        <p>
+          The instructions tell Gemini to fix spelling and grammar only, to add nothing the student didn't write, to keep
+          the student's own simple words, and to list everything it changed. Read <b>What I changed</b> together. If
+          Gemini added a skill or duty anyway, don't use that part.
+        </p>
+        <p>
+          The resume copies only the goal and the job bullets, with no name or contact info. The cover letter copies the
+          body of the letter, which has the student's name, phone, and email in it.
+        </p>
+        <p>
+          Paste the better wording back into the boxes on that step. For the cover letter, the <b>My final letter</b> box
+          replaces the built letter in the print view and the Word file. Starting a new application clears it.
+        </p>
+      </Topic>
+
       <Topic title="Printing and PDFs">
         <p>
           Click <b>Print / Save as PDF</b>. To make a PDF, pick <b>Save as PDF</b> as the printer. For the best match to the

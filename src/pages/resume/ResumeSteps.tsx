@@ -3,6 +3,8 @@ import { usePageData } from '../../data/store'
 import { SKILL_IDEAS } from '../../data/resume'
 import { Card, Check, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { AvailabilityNote } from '../../components/AvailabilityNote'
+import { Polish } from '../../components/Polish'
+import { resumeParts, resumePrompt } from '../../data/polish'
 
 export function GoalStep() {
   const { data: r, set, packet } = usePageData('resume')
@@ -68,5 +70,21 @@ export function FinishStep() {
         </ul>
       </Card>
     </>
+  )
+}
+
+// Optional: clean up the goal and job bullets with Gemini, then paste the better wording back.
+export function PolishStep() {
+  const { data: r, set, update, packet } = usePageData('resume')
+  const { jobs } = resumeParts(packet)
+  return (
+    <Polish prompt={resumePrompt(packet)} emptyNote="Write your goal and what you did at each job first. Then come back here.">
+      <p className="text-slate-700">Gemini gives each part a label. Paste each one into the box with the same label. These are the same boxes as the earlier steps.</p>
+      <TextArea label="MY GOAL" value={r.objective} onChange={(v) => set('objective', v)} rows={2} />
+      {jobs.map((j) => (
+        <TextArea key={j.index} label={`${j.label} (one per line)`} rows={4} value={r.bullets[j.index] ?? ''}
+          onChange={(v) => update((d) => { d.pages.resume.bullets[j.index] = v })} />
+      ))}
+    </Polish>
   )
 }

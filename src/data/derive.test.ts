@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { blankPacket } from './packet'
-import { contactLine, coverLetterParagraphs, joinList, summarizeAvailability } from './derive'
+import { contactLine, coverLetterParagraphs, finalLetterParagraphs, joinList, summarizeAvailability } from './derive'
 
 describe('summarizeAvailability', () => {
   it('groups weekdays and weekends like the handout example', () => {
@@ -35,7 +35,7 @@ describe('joinList', () => {
 })
 
 describe('cover letter', () => {
-  it('matches the Jordan Lee example from the handout', () => {
+  it('builds the Jordan Lee example from the handout, with varied sentence openings', () => {
     const p = blankPacket()
     Object.assign(p.profile, { firstName: 'Jordan', lastName: 'Lee', cellPhone: '(619) 555-0142', email: 'jordan.lee@email.com',
       street: '1234 Main Street', city: 'San Diego', zip: '92105' })
@@ -47,10 +47,26 @@ describe('cover letter', () => {
     })
     const [p1, p2, p3, p4] = coverLetterParagraphs(p)
     expect(p1).toBe('My name is Jordan Lee, and I am applying for the Store Associate position at Smart & Final. I found this job on the Smart & Final careers website.')
-    expect(p2).toBe('I have experience working with customers. At CVS, I stocked shelves and helped customers find products. I am reliable and a team player, and I keep my work area clean and organized.')
+    expect(p2).toBe('I have experience working with customers. At CVS, I stocked shelves and helped customers find products. My strengths are being reliable and being a team player, and I keep my work area clean and organized.')
     expect(p3).toBe('I want to work at Smart & Final because I shop there with my family.')
     expect(p4).toBe('I am available to work Monday through Friday after 2:00 PM. Thank you for your time and consideration. I look forward to hearing from you. You can reach me at (619) 555-0142 or jordan.lee@email.com.')
     expect(contactLine(p.profile)).toBe('1234 Main Street, San Diego, CA 92105  |  (619) 555-0142  |  jordan.lee@email.com')
+  })
+
+  it('turns the second place around and handles a single strength', () => {
+    const p = blankPacket()
+    Object.assign(p.pages.coverLetter, { place1: 'CVS', did1: 'Stocked shelves.', place2: 'the Food Bank', did2: 'Sorted donations', strengths: ['Follows directions'] })
+    expect(coverLetterParagraphs(p)[1]).toBe('At CVS, I stocked shelves. I also sorted donations at the Food Bank. One of my strengths is being good at following directions.')
+  })
+
+  it('uses the final letter the student pasted in, without a pasted greeting, sign-off, or notes', () => {
+    const p = blankPacket()
+    p.pages.coverLetter.finalText = '[MY LETTER]\n\nDear Hiring Team,\n\nFirst **paragraph**\nstill first.\n\nThank you for your time and consideration. I look forward to hearing from you soon and talking more.\n\nSincerely,\n\nJordan\n\nWHAT I CHANGED\nFixed a comma.'
+    expect(coverLetterParagraphs(p)).toEqual([
+      'First paragraph still first.',
+      'Thank you for your time and consideration. I look forward to hearing from you soon and talking more.',
+    ])
+    expect(finalLetterParagraphs('one\ntwo')).toEqual(['one', 'two'])
   })
 
   it('uses placeholders and skips empty parts for a brand-new packet', () => {
