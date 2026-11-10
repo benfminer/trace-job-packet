@@ -1,13 +1,17 @@
 import { createContext, useContext } from 'react'
 import type { Packet } from './packet'
 
-export type Route = { view: 'home' | 'printAll' | 'help' | 'paper' | 'apply' } | { view: 'edit' | 'print'; page: string }
+// step: which wizard step is showing (left out for the first one).
+export type Route =
+  | { view: 'home' | 'printAll' | 'help' | 'paper' | 'apply' | 'job' | 'after' }
+  | { view: 'edit' | 'print'; page: string; step?: number }
 
 export type Store = {
   packet: Packet
   // Change the packet: update((d) => { d.profile.firstName = 'Jordan' })
   update: (fn: (draft: Packet) => void) => void
   go: (route: Route) => void
+  route: Route
 }
 
 export const StoreContext = createContext<Store | null>(null)

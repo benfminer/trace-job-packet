@@ -11,22 +11,26 @@ import { PrintAll } from './components/PrintAll'
 import { HelpPage } from './components/HelpPage'
 import { PaperPage } from './components/PaperPage'
 import { ApplyPage } from './pages/appInfo/ApplyPage'
+import { AfterPage } from './pages/interview/AfterPage'
+import { JobPage } from './components/JobPage'
 
 // Routes live in the URL hash (#/edit/references) so the browser Back button works.
 function readRoute(): Route {
-  const [, view, page] = window.location.hash.split('/')
-  if ((view === 'edit' || view === 'print') && page && PAGE_VIEWS[page]) return { view, page }
+  const [, view, page, step] = window.location.hash.split('/')
+  if ((view === 'edit' || view === 'print') && page && PAGE_VIEWS[page]) {
+    return Number(step) > 0 ? { view, page, step: Number(step) } : { view, page }
+  }
   if (view === 'print-all') return { view: 'printAll' }
   if (view === 'help') return { view: 'help' }
   if (view === 'paper') return { view: 'paper' }
-  if (view === 'apply') return { view: 'apply' }
+  if (view === 'apply' || view === 'job' || view === 'after') return { view }
   return { view: 'home' }
 }
 
 function routeHash(route: Route) {
   if (route.view === 'printAll') return '#/print-all'
   if (!('page' in route)) return `#/${route.view}`
-  return `#/${route.view}/${route.page}`
+  return `#/${route.view}/${route.page}` + (route.step ? `/${route.step}` : '')
 }
 
 export function App() {
@@ -64,7 +68,7 @@ export function App() {
     window.scrollTo({ top: 0 })
   }, [])
 
-  const store: Store | null = useMemo(() => (packet ? { packet, update, go } : null), [packet, update, go])
+  const store: Store | null = useMemo(() => (packet ? { packet, update, go, route } : null), [packet, update, go, route])
 
   // Resolves false if the Save As window was cancelled, so nothing counts as saved.
   const save = async () => {
@@ -100,13 +104,16 @@ export function App() {
     : route.view === 'help' ? StaffHelp
     : route.view === 'paper' ? PaperCopiesPage
     : route.view === 'apply' ? ApplyPage
+    : route.view === 'job' ? JobPage
+    : route.view === 'after' ? AfterPage
     : !views ? HomeScreen
     : route.view === 'print' ? (views.Print ?? views.Edit) : views.Edit
 
   return (
     <StoreContext.Provider value={store}>
       <TopBar dirty={dirty} onSave={save} onClose={() => (dirty ? setClosing(true) : close())} />
-      <main key={routeHash(route)} className="anim-rise">
+      {/* Keyed without the step, so moving between wizard steps doesn't restart the whole screen. */}
+      <main key={routeHash({ ...route, step: 0 } as Route)} className="anim-rise">
         <View />
       </main>
       {closing && (

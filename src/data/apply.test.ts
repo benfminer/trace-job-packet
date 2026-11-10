@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { blankPacket } from './packet'
+import { blankJob, blankPacket } from './packet'
 import { applySections } from './apply'
 
 describe('applySections', () => {
@@ -15,6 +15,7 @@ describe('applySections', () => {
 
   it('numbers only the jobs that are filled in', () => {
     const p = blankPacket()
+    p.profile.jobs.push(blankJob(), blankJob())
     p.profile.jobs[1].employer = 'CVS'
     const jobs = applySections(p).filter((s) => s.title.startsWith('Job #'))
     expect(jobs.map((s) => s.title)).toEqual(['Job #1 (most recent)'])

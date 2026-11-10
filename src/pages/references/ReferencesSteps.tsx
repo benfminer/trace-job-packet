@@ -50,7 +50,9 @@ export function ReferenceStep({ index }: ReferenceStepProps) {
 }
 
 export function UsesStep() {
-  const { data, update } = usePageData('references')
+  const { data, update, packet } = usePageData('references')
+  // The real job from the Home screen, ready to tap in.
+  const applying = packet.target.practice ? '' : [packet.target.company, packet.target.title].filter(Boolean).join(', ')
   const set = <K extends keyof ReferenceUse>(i: number, key: K, v: ReferenceUse[K]) =>
     update((d) => { d.pages.references.uses[i][key] = v })
   return (
@@ -62,6 +64,7 @@ export function UsesStep() {
             <TextField label="Job / company" value={u.job} onChange={(v) => set(i, 'job', v)} />
             <TextField label="References I listed" value={u.listed} onChange={(v) => set(i, 'listed', v)} placeholder="#1, #2, #3" />
           </Grid>
+          {applying && !u.job && <Ideas label="The job I'm applying for (tap to use):" ideas={[applying]} onPick={(v) => set(i, 'job', v)} />}
           <Check label="I told them" checked={u.toldThem} onChange={(v) => set(i, 'toldThem', v)} />
         </Card>
       ))}

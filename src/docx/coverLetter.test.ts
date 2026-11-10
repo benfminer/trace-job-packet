@@ -7,7 +7,7 @@ describe('cover letter Word file', () => {
   it('builds a .docx that contains the letter', async () => {
     const p = blankPacket()
     Object.assign(p.profile, { firstName: 'Jordan', lastName: 'Lee' })
-    Object.assign(p.pages.coverLetter, { jobTitle: 'Store Associate', company: 'Smart & Final' })
+    Object.assign(p.target, { title: 'Store Associate', company: 'Smart & Final' })
     const buf = await Packer.toBuffer(buildCoverLetterDoc(p))
     expect(buf.subarray(0, 2).toString()).toBe('PK') // a .docx is a zip file
     const { unzipSync, strFromU8 } = await import('fflate')

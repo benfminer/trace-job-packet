@@ -1,5 +1,5 @@
 // Walks through a page one small step at a time, then on to Review & print.
-import { useEffect, useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { useStore } from '../data/store'
 import type { PageInfo } from '../data/pages'
@@ -61,21 +61,26 @@ function StepList({ steps, index, onPick }: StepListProps) {
 }
 
 export function Wizard({ page, steps, finishTo = 'print' }: WizardProps) {
-  const { go, update } = useStore()
-  const [index, setIndex] = useState(0)
+  const { packet, go, update, route } = useStore()
+  // The step lives in the URL (#/edit/resume/2), so the browser Back button goes back one step.
+  const index = Math.min(Math.max('step' in route ? route.step ?? 0 : 0, 0), steps.length - 1)
+  const markStarted = () => {
+    if (!packet.status[page.id].started) update((d) => { d.status[page.id].started = true })
+  }
+  const setIndex = (i: number) => {
+    markStarted()
+    go({ view: 'edit', page: page.id, step: i })
+  }
   const step = steps[index]
   const isLast = index === steps.length - 1
   // One-step pages (the tracker) skip the step list and use the full width.
   const multi = steps.length > 1
 
-  useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [index])
-
   const finish = () => {
+    markStarted()
     if (finishTo === 'print') return go({ view: 'print', page: page.id })
     // Pages with no print view count as done when the last step is finished.
-    update((d) => { d.status[page.id] = { done: true, date: todayIso() } })
+    update((d) => { d.status[page.id] = { started: true, done: true, date: todayIso() } })
     go({ view: 'home' })
   }
 

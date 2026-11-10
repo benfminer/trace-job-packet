@@ -4,7 +4,7 @@
 import { splitCityStateZip } from './format'
 
 export const APP_ID = 'trace-job-packet'
-export const SCHEMA_VERSION = 2
+export const SCHEMA_VERSION = 3
 
 export type YesNo = '' | 'yes' | 'no'
 
@@ -58,7 +58,8 @@ export type Reference = {
 
 export type ReferenceUse = { date: string; job: string; listed: string; toldThem: boolean }
 
-export type PageStatus = { done: boolean; date: string }
+// started: the wizard has been used. done: checked off on the Review & print screen.
+export type PageStatus = { started: boolean; done: boolean; date: string }
 
 export type DocRow = { have: boolean; where: string; expires: string }
 
@@ -101,10 +102,18 @@ export const blankJob = (): Job => ({
   startPay: '', endPay: '', duties: '', reasonLeft: '', okToContact: '',
 })
 
+// The one job the packet is aimed at right now. A practice job until the student applies for a real one.
+export const blankTarget = () => ({
+  practice: true,
+  title: '', company: '', street: '', city: '', state: 'CA', zip: '',
+  whereFound: '', hiringManager: '',
+})
+export type Target = ReturnType<typeof blankTarget>
+
 const blankDay = (): DayAvailability => ({ morning: false, afternoon: false, evening: false, earliest: '', latest: '' })
 const blankContact = (): Contact => ({ name: '', relationship: '', phone: '' })
-const blankCert = (): Certification => ({ name: '', earned: '', expires: '' })
-const blankCommitment = (): Commitment => ({ days: '', time: '', what: '' })
+export const blankCert = (): Certification => ({ name: '', earned: '', expires: '' })
+export const blankCommitment = (): Commitment => ({ days: '', time: '', what: '' })
 const blankReference = (): Reference => ({
   name: '', jobTitle: '', workplace: '', howTheyKnowMe: '', phone: '', email: '', knownFor: '',
   saidYes: false, askedDate: '',
@@ -149,6 +158,8 @@ export function blankPacket() {
     teacher: '',
     caseManager: '',
 
+    target: blankTarget(),
+
     // "Enter once" info shared by every page.
     profile: {
       firstName: '', middleName: '', lastName: '', preferredName: '',
@@ -162,16 +173,16 @@ export function blankPacket() {
       hsName: '', hsAddress: '', hsCity: '', hsState: 'CA', hsZip: '', hsDates: '',
       hsCredential: '' as '' | 'diploma' | 'certificate',
       hsYear: '', highestGrade: '',
-      certifications: [blankCert(), blankCert(), blankCert()],
+      certifications: [blankCert()],
       driversLicense: '' as '' | 'yes' | 'no' | 'permit',
       licenseState: '',
 
-      jobs: [blankJob(), blankJob(), blankJob()],
+      jobs: [blankJob()],
       strengths: [] as string[],
       doWell: '',
 
       availability: Object.fromEntries(DAYS.map((d) => [d, blankDay()])) as Record<Day, DayAvailability>,
-      commitments: [blankCommitment(), blankCommitment(), blankCommitment()],
+      commitments: [blankCommitment()],
       hoursWanted: '',
       canAlsoWork: [] as string[],
       travelModes: [] as string[],
@@ -187,18 +198,18 @@ export function blankPacket() {
         legalToWork: '' as YesNo, sponsorship: '' as YesNo,
         workedHereBefore: '' as YesNo, workedHereWhen: '',
         knowAnyone: '', reliableTransport: '' as YesNo, transportHow: '',
-        liftStand: '', heardAbout: '', weekendsHolidays: '',
+        liftStand: '', weekendsHolidays: '',
       },
       references: {
         people: [blankReference(), blankReference(), blankReference()],
-        uses: [blankReferenceUse(), blankReferenceUse(), blankReferenceUse()],
+        uses: [blankReferenceUse()],
       },
       resume: {
         objective: '',
         skills: [] as string[],
         languages: '',
         // Bullet points for each job in About Me, one per line.
-        bullets: ['', '', ''],
+        bullets: [''],
         showAvailability: true,
         prefilled: false,
       },
@@ -242,7 +253,7 @@ export function blankPacket() {
         getNow: [] as string[],
         howReport: [] as string[],
         whoHelps: '',
-        log: [blankPayReport(), blankPayReport(), blankPayReport(), blankPayReport()],
+        log: [blankPayReport()],
       },
       interview: {
         introName: '', introNow: '', introExperience: '', introGoodAt: '', introWhy: '',
@@ -255,16 +266,14 @@ export function blankPacket() {
         otherAnswer: '',
         quiz: ['', '', '', '', '', '', '', ''] as QuizAnswer[],
         checklist: [] as string[],
-        // The thank-you note and "How did it go?" are for one interview at a time.
-        interviewer: '', thanksJob: '', thanksCompany: '', talkedAbout: '',
+        // The thank-you note and "How did it go?" are for one interview at a time (the target job).
+        interviewer: '', talkedAbout: '',
         howCompanyDate: '', wentWell: '', practiceNext: '',
       },
       tracker: {
         rows: [blankApplication()],
       },
       coverLetter: {
-        jobTitle: '', company: '', companyStreet: '', companyCity: '', companyState: 'CA', companyZip: '',
-        whereFound: '', hiringManager: '',
         experienceWith: '',
         place1: '', did1: '', place2: '', did2: '',
         strengths: [] as string[],
@@ -278,7 +287,7 @@ export function blankPacket() {
       },
     },
 
-    status: Object.fromEntries(PAGE_IDS.map((id) => [id, { done: false, date: '' }])) as Record<PageId, PageStatus>,
+    status: Object.fromEntries(PAGE_IDS.map((id) => [id, { started: false, done: false, date: '' }])) as Record<PageId, PageStatus>,
   }
 }
 
@@ -312,6 +321,52 @@ function splitCoverLetterCity(raw: object) {
   Object.assign(letter, { companyCity: city, companyZip: zip }, state ? { companyState: state } : {})
 }
 
+// Version 3 keeps the job being applied for in one place (target) instead of on the cover letter,
+// the thank-you note, and the application questions. A file with a company typed in counts as a real job.
+function moveJobToTarget(raw: object) {
+  const r = raw as { target?: unknown; pages?: Record<string, Record<string, unknown> | undefined> }
+  if (r.target) return
+  const text = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+  const c = r.pages?.coverLetter ?? {}
+  const company = text(c.company) || text(r.pages?.interview?.thanksCompany)
+  r.target = {
+    practice: !company,
+    title: text(c.jobTitle) || text(r.pages?.interview?.thanksJob),
+    company,
+    street: c.companyStreet, city: c.companyCity, state: c.companyState, zip: c.companyZip,
+    whereFound: text(c.whereFound) || text(r.pages?.appInfo?.heardAbout),
+    hiringManager: c.hiringManager,
+  }
+}
+
+// True if `value` has an answer that a blank `template` doesn't.
+function differs(template: unknown, value: unknown): boolean {
+  if (Array.isArray(template)) {
+    if (!Array.isArray(value)) return false
+    return template.length === 0 ? value.length > 0 : value.some((v, i) => differs(template[i] ?? template[0], v))
+  }
+  if (template && typeof template === 'object') {
+    return Object.entries(template).some(([k, t]) => differs(t, (value as Record<string, unknown>)[k]))
+  }
+  return value !== template
+}
+
+// Drops empty cards from the end of an "Add another" list, always leaving one.
+function trimBlank<T>(list: T[], blank: T) {
+  while (list.length > 1 && !differs(blank, list[list.length - 1])) list.pop()
+}
+
+// Files from before version 3 have no "started" marks, so pages with answers get one.
+function markStarted(packet: Packet) {
+  const blank = blankPacket()
+  const p = packet.profile
+  const touched = (id: PageId) =>
+    id === 'about' ? !!(p.firstName || p.lastName)
+    : id === 'availability' ? !!p.availabilityText || differs(blank.profile.availability, p.availability)
+    : differs(blank.pages[id], packet.pages[id])
+  for (const id of PAGE_IDS) packet.status[id].started ||= packet.status[id].done || touched(id)
+}
+
 // Turns anything read from a save file into a safe, complete Packet.
 export function loadPacket(raw: unknown): Packet {
   if (!raw || typeof raw !== 'object' || (raw as { app?: unknown }).app !== APP_ID) {
@@ -322,11 +377,17 @@ export function loadPacket(raw: unknown): Packet {
     throw new PacketFileError('This file was saved by a newer version of the app. Reload the page and try again.')
   }
   // Older files get migrated here, before fitting.
-  if (typeof version !== 'number' || version < 2) splitCoverLetterCity(raw)
+  const old = typeof version !== 'number' ? 0 : version
+  if (old < 2) splitCoverLetterCity(raw)
+  if (old < 3) moveJobToTarget(raw)
   const packet = fit(blankPacket(), raw) as Packet
-  // A new packet starts with 3 blank jobs; keep a file's own count so removed jobs stay removed.
-  const savedJobs = (raw as { profile?: { jobs?: unknown } }).profile?.jobs
-  if (Array.isArray(savedJobs) && savedJobs.length > 0) packet.profile.jobs.length = savedJobs.length
+  // Older files started with 3 empty job cards (and so on). Empty ones at the end go away.
+  trimBlank(packet.profile.jobs, blankJob())
+  trimBlank(packet.profile.certifications, blankCert())
+  trimBlank(packet.profile.commitments, blankCommitment())
+  trimBlank(packet.pages.references.uses, blankReferenceUse())
+  trimBlank(packet.pages.benefits.log, blankPayReport())
+  if (old < 3) markStarted(packet)
   packet.schemaVersion = SCHEMA_VERSION
   return packet
 }

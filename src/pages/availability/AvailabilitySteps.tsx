@@ -1,6 +1,6 @@
 // Page 05 steps.
 import { useProfile } from '../../data/store'
-import { DAYS, type Commitment, type DayAvailability } from '../../data/packet'
+import { blankCommitment, DAYS, type Commitment, type DayAvailability } from '../../data/packet'
 import { summarizeAvailability } from '../../data/derive'
 import { Card, Grid, MultiChoice, Select, TextArea, TextField, Tip } from '../../components/fields'
 import { ALSO_WORK, HOURS_OPTIONS, SLOTS, TIMES, TRAVEL_MODES } from '../../data/options'
@@ -9,6 +9,9 @@ export function TimesStep() {
   const { p, update } = useProfile()
   const setDay = <K extends keyof DayAvailability>(day: (typeof DAYS)[number], key: K, v: DayAvailability[K]) =>
     update((d) => { d.profile.availability[day][key] = v })
+  const sameAsMonday = (day: (typeof DAYS)[number]) =>
+    update((d) => { d.profile.availability[day] = { ...d.profile.availability.Monday } })
+  const mondaySet = Object.values(p.availability.Monday).some(Boolean)
   return (
     <>
       <Tip>
@@ -20,7 +23,15 @@ export function TimesStep() {
           const a = p.availability[day]
           return (
             <div key={day} className="rounded-xl border border-slate-200 p-3">
-              <p className="mb-2 text-lg font-bold">{day}</p>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <p className="text-lg font-bold">{day}</p>
+                {day !== 'Monday' && mondaySet && (
+                  <button type="button" onClick={() => sameAsMonday(day)}
+                    className="rounded-full border border-dashed border-slate-400 bg-slate-50 px-3 py-1 text-sm text-slate-700 hover:border-brand hover:text-brand">
+                    Same as Monday
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {SLOTS.map((s) => (
                   <button key={s.key} type="button" aria-pressed={a[s.key]} onClick={() => setDay(day, s.key, !a[s.key])}
@@ -58,7 +69,7 @@ export function CommitmentsStep() {
           </Grid>
         </Card>
       ))}
-      <button type="button" onClick={() => update((d) => { d.profile.commitments.push({ days: '', time: '', what: '' }) })}
+      <button type="button" onClick={() => update((d) => { d.profile.commitments.push(blankCommitment()) })}
         className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
         + Add another
       </button>

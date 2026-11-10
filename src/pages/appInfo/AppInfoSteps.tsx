@@ -3,6 +3,7 @@ import { useStore, usePageData } from '../../data/store'
 import { availabilitySentence, fullName } from '../../data/derive'
 import { Card, Check, Choice, Grid, TextField, Tip } from '../../components/fields'
 import { HOURS_OPTIONS, yesNo } from '../../data/options'
+import { PracticeNote } from '../../components/JobFields'
 
 export function JobWantedStep() {
   const { data: a, set } = usePageData('appInfo')
@@ -25,6 +26,7 @@ export function JobWantedStep() {
   )
 }
 
+// Questions with the same answer on every application.
 export function QuestionsStep() {
   const { data: a, set } = usePageData('appInfo')
   return (
@@ -32,14 +34,28 @@ export function QuestionsStep() {
       <Tip>Decide your answers ahead of time with your teacher, so you're not guessing on the computer.</Tip>
       <Choice label="Are you legally allowed to work in the U.S.?" value={a.legalToWork} onChange={(v) => set('legalToWork', v)} options={yesNo} />
       <Choice label="Will you need visa sponsorship now or in the future?" value={a.sponsorship} onChange={(v) => set('sponsorship', v)} options={yesNo} />
-      <Choice label="Have you ever worked for this company before?" value={a.workedHereBefore} onChange={(v) => set('workedHereBefore', v)} options={yesNo} />
-      {a.workedHereBefore === 'yes' && <TextField label="When?" value={a.workedHereWhen} onChange={(v) => set('workedHereWhen', v)} width="short" />}
-      <TextField label="Do you know anyone who works here?" value={a.knowAnyone} onChange={(v) => set('knowAnyone', v)} />
       <Choice label="Do you have reliable transportation?" value={a.reliableTransport} onChange={(v) => set('reliableTransport', v)} options={yesNo} />
       {a.reliableTransport === 'yes' && <TextField label="How?" value={a.transportHow} onChange={(v) => set('transportHow', v)} placeholder="Bus and trolley" />}
       <TextField label="Can you lift ____ lbs? Stand for a full shift?" value={a.liftStand} onChange={(v) => set('liftStand', v)} placeholder="Yes, up to 25 lbs. Yes, I can stand for a full shift." />
-      <TextField label="How did you hear about this job?" value={a.heardAbout} onChange={(v) => set('heardAbout', v)} />
       <TextField label="Can you work weekends? Holidays?" value={a.weekendsHolidays} onChange={(v) => set('weekendsHolidays', v)} />
+    </>
+  )
+}
+
+// Questions whose answers change with the company. They use the job from the Home screen.
+export function ThisJobStep() {
+  const { data: a, set } = usePageData('appInfo')
+  const { packet, update } = useStore()
+  const company = packet.target.company.trim()
+  return (
+    <>
+      <PracticeNote />
+      <Choice label={`Have you ever worked for ${company || 'this company'} before?`} value={a.workedHereBefore} onChange={(v) => set('workedHereBefore', v)} options={yesNo} />
+      {a.workedHereBefore === 'yes' && <TextField label="When?" value={a.workedHereWhen} onChange={(v) => set('workedHereWhen', v)} width="short" />}
+      <TextField label={`Do you know anyone who works ${company ? `at ${company}` : 'here'}?`} value={a.knowAnyone} onChange={(v) => set('knowAnyone', v)}
+        placeholder="No" />
+      <TextField label="How did you hear about this job?" value={packet.target.whereFound}
+        onChange={(v) => update((d) => { d.target.whereFound = v })} hint="Same answer as on your cover letter." />
     </>
   )
 }

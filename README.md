@@ -31,11 +31,20 @@ It works in any up-to-date browser on a teacher computer or a Chromebook. Nothin
 ### Starting out
 1. Open the [live site](https://benfminer.github.io/trace-job-packet/).
 2. Click **Start a new packet** for a new student, or **Open a saved packet** to keep going with a student's file.
-3. Start with **About Me**. Everything typed there fills in the other pages automatically.
-4. Pick any page from the Home screen. Each page goes step by step with **Back** and **Next**, then ends on
-   **Review & print**.
-5. On the Review & print screen, check **This page is done** to put a checkmark and date on the Home screen and the
-   cover page.
+3. Start with **About Me**, then **Weekly Availability**. What's typed there fills in the other pages automatically.
+4. The Home screen lists the pages in a good working order, and **Next up** points to the next one. Each page goes
+   step by step with **Back** and **Next**, then ends on **Review & print**.
+5. On the Review & print screen, click **Done, next** to put a checkmark and date on the Home screen and the cover
+   page and move on to the next page.
+
+### Practice job or real job
+- The **job card** on the Home screen holds the one job the packet is aimed at. A new packet starts with a
+  **practice job**, so the student can practice the cover letter and interview answers before there is a real job.
+  Practice pages say "Practice" on screen only. It never prints.
+- For a real job, click **I'm applying for a real job** and type the job title and company once. It fills in the
+  cover letter, the "about this job" application questions, the thank-you note, and a Job Search Tracker row.
+- For the next job, click **Start a new application**. The old job stays on the tracker and only the answers about
+  that job are cleared. Download the old cover letter first if you want to keep it.
 
 Dashed "idea" buttons under a box drop a suggestion into it. The student can change it after.
 

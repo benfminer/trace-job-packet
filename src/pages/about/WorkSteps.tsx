@@ -1,4 +1,5 @@
 // About Me steps: work and volunteer history, strengths.
+import { useState } from 'react'
 import { useProfile } from '../../data/store'
 import { blankJob, type Job } from '../../data/packet'
 import { STRENGTHS } from '../../data/derive'
@@ -23,34 +24,42 @@ interface JobCardProps {
 }
 
 function JobCard({ index, job, onChange, onRemove }: JobCardProps) {
+  // The boxes only applications ask for stay folded away until they're needed.
+  // They start open when a saved packet already has something in them.
+  const [more, setMore] = useState(() => !!(job.address || job.city || job.zip || job.phone || job.supervisor || job.startPay || job.endPay || job.reasonLeft || job.okToContact))
   return (
     <Card title={`Job #${index + 1}${index === 0 ? ' (most recent)' : ''}`}>
       <Grid>
         <TextField label="Employer" value={job.employer} onChange={(v) => onChange('employer', v)} placeholder="CVS, a TRACE work site, ..." />
         <TextField label="Job title" value={job.title} onChange={(v) => onChange('title', v)} placeholder="Store Associate, Volunteer, ..." />
-      </Grid>
-      <AddressFields street={job.address} city={job.city} state={job.state} zip={job.zip}
-        onChange={(part, v) => onChange(JOB_ADDRESS[part], v)} />
-      <Grid>
-        <TextField label="Phone" type="tel" value={job.phone} onChange={(v) => onChange('phone', v)} />
-        <TextField label="Supervisor" value={job.supervisor} onChange={(v) => onChange('supervisor', v)} />
-        <Grid>
-          <TextField label="Start (month/year)" value={job.start} onChange={(v) => onChange('start', v)} placeholder="06/2025"
-            format={formatMonthYear} />
-          <TextField label='End (or "Present")' value={job.end} onChange={(v) => onChange('end', v)} placeholder="Present"
-            format={formatMonthYear} />
-        </Grid>
-        <TextField label="Starting pay" value={job.startPay} onChange={(v) => onChange('startPay', v)} placeholder="$16.85/hr or Unpaid" />
-        <TextField label="Ending pay" value={job.endPay} onChange={(v) => onChange('endPay', v)} />
+        <TextField label="Start (month/year)" value={job.start} onChange={(v) => onChange('start', v)} placeholder="06/2025"
+          format={formatMonthYear} />
+        <TextField label='End (or "Present")' value={job.end} onChange={(v) => onChange('end', v)} placeholder="Present"
+          format={formatMonthYear} />
       </Grid>
       <TextArea label="What I did" value={job.duties} onChange={(v) => onChange('duties', v)} rows={2}
         hint='Start with an action word, like "Stocked shelves and helped customers find products."' />
-      <div>
-        <TextField label="Reason I left" value={job.reasonLeft} onChange={(v) => onChange('reasonLeft', v)}
-          hint="Keep it short and positive. Leave blank if you still work there." />
-        <Ideas label="Good ways to say it:" ideas={REASON_IDEAS} onPick={(v) => onChange('reasonLeft', v)} />
-      </div>
-      <Choice label="OK to contact?" value={job.okToContact} onChange={(v) => onChange('okToContact', v)} options={yesNo} />
+      <details open={more} onToggle={(e) => setMore(e.currentTarget.open)} className="group rounded-lg border border-slate-200">
+        <summary className="cursor-pointer px-4 py-3 font-semibold text-brand select-none">
+          More details for applications <span className="font-normal text-slate-500">(address, supervisor, pay, why I left)</span>
+        </summary>
+        <div className="space-y-4 border-t border-slate-200 p-4">
+          <AddressFields street={job.address} city={job.city} state={job.state} zip={job.zip}
+            onChange={(part, v) => onChange(JOB_ADDRESS[part], v)} />
+          <Grid>
+            <TextField label="Phone" type="tel" value={job.phone} onChange={(v) => onChange('phone', v)} />
+            <TextField label="Supervisor" value={job.supervisor} onChange={(v) => onChange('supervisor', v)} />
+            <TextField label="Starting pay" value={job.startPay} onChange={(v) => onChange('startPay', v)} placeholder="$16.85/hr or Unpaid" />
+            <TextField label="Ending pay" value={job.endPay} onChange={(v) => onChange('endPay', v)} />
+          </Grid>
+          <div>
+            <TextField label="Reason I left" value={job.reasonLeft} onChange={(v) => onChange('reasonLeft', v)}
+              hint="Keep it short and positive. Leave blank if you still work there." />
+            <Ideas label="Good ways to say it:" ideas={REASON_IDEAS} onPick={(v) => onChange('reasonLeft', v)} />
+          </div>
+          <Choice label="OK to contact?" value={job.okToContact} onChange={(v) => onChange('okToContact', v)} options={yesNo} />
+        </div>
+      </details>
       {onRemove && (
         <button type="button" onClick={onRemove} className="text-sm font-semibold text-slate-500 underline hover:text-red-700">
           Remove this job

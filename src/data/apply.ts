@@ -56,7 +56,7 @@ export function applySections(packet: Packet): CopySection[] {
       ['Know anyone who works here?', a.knowAnyone],
       ['Reliable transportation?', [yesNoText(a.reliableTransport), a.reliableTransport === 'yes' ? a.transportHow : ''].filter(Boolean).join(', ')],
       ['Lifting and standing', a.liftStand],
-      ['How I heard about this job', a.heardAbout],
+      ['How I heard about this job', packet.target.whereFound],
       ['Weekends and holidays', a.weekendsHolidays],
     ] },
   ]

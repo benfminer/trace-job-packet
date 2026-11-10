@@ -1,9 +1,8 @@
 // Builds an editable Word copy of the cover letter.
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import type { Packet } from '../data/packet'
-import { cityLine } from '../data/format'
 import { LETTER } from './resume'
-import { contactLine, coverLetterParagraphs, fullName, greetingName, letterDate, wordFileName } from '../data/derive'
+import { contactLine, coverLetterParagraphs, fullName, greetingName, letterDate, recipientLines, wordFileName } from '../data/derive'
 
 const FONT = 'Georgia'
 const line = (text: string, opts: { size?: number; bold?: boolean; color?: string; after?: number } = {}) =>
@@ -14,9 +13,9 @@ const line = (text: string, opts: { size?: number; bold?: boolean; color?: strin
 
 export function buildCoverLetterDoc(packet: Packet) {
   const p = packet.profile
-  const c = packet.pages.coverLetter
+  const t = packet.target
   const name = fullName(p) || '[Your Name]'
-  const recipient = [c.hiringManager || 'Hiring Manager', c.company, c.companyStreet, cityLine(c.companyCity, c.companyState, c.companyZip)].filter(Boolean)
+  const recipient = recipientLines(t)
 
   return new Document({
     creator: 'TRACE Job Packet',
@@ -28,7 +27,7 @@ export function buildCoverLetterDoc(packet: Packet) {
         line(contactLine(p), { size: 19, color: '444444', after: 360 }),
         line(letterDate(packet), { after: 240 }),
         ...recipient.map((r, i) => line(r, { after: i === recipient.length - 1 ? 240 : 0 })),
-        line(`Dear ${greetingName(c)},`, { after: 200 }),
+        line(`Dear ${greetingName(t)},`, { after: 200 }),
         ...coverLetterParagraphs(packet).map((text) => line(text, { after: 200 })),
         line('Sincerely,', { after: 480 }),
         line(name),

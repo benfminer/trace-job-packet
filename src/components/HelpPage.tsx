@@ -75,10 +75,34 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           sheet, and other pages.
         </p>
         <p>
-          Pages can be done in any order. Each page ends on a <b>Review & print</b> screen. Check <b>This page is done</b>
-          there to put a checkmark and date on the Home screen and the cover page.
+          The Home screen lists the pages in a good working order (the page numbers still match the paper folder), and
+          <b> Next up</b> points to the next page that isn't done. Pages can still be done in any order. Each page ends on
+          a <b>Review & print</b> screen. Click <b>Done, next</b> there to put a checkmark and date on the Home screen and
+          the cover page and move on to the next page.
         </p>
         <p>Dashed "idea" buttons drop a suggestion into the box above them. The student can change it after.</p>
+      </Topic>
+
+      <Topic title="Practice job or real job">
+        <p>
+          The <b>job card</b> near the top of the Home screen holds the one job the packet is aimed at. A new packet
+          starts in <b>Getting ready</b> mode with a <b>practice job</b>: pick a job the student might want, so they can
+          practice the cover letter and interview answers. Practice pages say "Practice" on screen. It never prints.
+        </p>
+        <p>
+          When the student finds a real job, click <b>I'm applying for a real job</b> and type in the job title and
+          company once. It fills in the cover letter, the "about this job" application questions, the thank-you note, and
+          a row on the Job Search Tracker.
+        </p>
+        <p>
+          For the next job, click <b>Start a new application</b>. The old job stays on the tracker, and only the answers
+          about that job are cleared (why this company, the thank-you note, how the interview went). Experience,
+          strengths, and every other page stay. The old cover letter is not kept, so download its Word file or PDF first.
+        </p>
+        <p>
+          <b>After the interview</b> (in the "For this job" group) has the thank-you note and "How did it go?" They print
+          on the Interview day sheet of page 11.
+        </p>
       </Topic>
 
       <Topic title="Printing and PDFs">

@@ -2,7 +2,7 @@
 import { useProfile, usePageData } from '../../data/store'
 import { TRAVEL_MODES, yesNo } from '../../data/options'
 import type { Route } from '../../data/packet'
-import { Card, Check, Choice, Grid, MultiChoice, TextField, Tip } from '../../components/fields'
+import { Card, Check, Choice, Grid, Ideas, MultiChoice, TextField, Tip } from '../../components/fields'
 import { DateField } from '../../components/DateField'
 
 export function HowStep() {
@@ -34,12 +34,18 @@ interface RouteStepProps {
 }
 
 export function RouteStep({ index }: RouteStepProps) {
-  const { data, update } = usePageData('transportation')
+  const { data, update, packet } = usePageData('transportation')
   const r = data.routes[index]
+  const t = packet.target
+  // The job from the Home screen, ready to tap in.
+  const applying = [t.company, t.street].filter(Boolean).join(', ')
   const set = <K extends keyof Route>(key: K, v: Route[K]) => update((d) => { d.pages.transportation.routes[index][key] = v })
   return (
     <>
       <TextField label="Workplace and address" value={r.workplace} onChange={(v) => set('workplace', v)} placeholder="Smart & Final, 6235 El Cajon Blvd." />
+      {applying && !r.workplace && (
+        <Ideas label={t.practice ? 'My practice job (tap to use):' : "The job I'm applying for (tap to use):"} ideas={[applying]} onPick={(v) => set('workplace', v)} />
+      )}
       <Grid>
         <TextField label="Route(s) I take" value={r.routes} onChange={(v) => set('routes', v)} placeholder="Bus 1, then Bus 15" />
         <TextField label="Where I transfer" value={r.transfer} onChange={(v) => set('transfer', v)} />

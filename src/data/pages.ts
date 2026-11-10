@@ -19,4 +19,20 @@ export const PAGES: PageInfo[] = [
   { id: 'tracker', num: '12', title: 'Job Search Tracker', purpose: 'Every job I apply for', ready: true },
 ]
 
+// Home shows the pages in the order that works best, not in handout-number order.
+export const GROUPS: { title: string; note: string; ids: PageId[] }[] = [
+  { title: 'Start here', note: 'These two fill in the rest of the packet.', ids: ['about', 'availability'] },
+  { title: 'Get ready', note: 'Do these once. They work for any job.',
+    ids: ['resume', 'appInfo', 'references', 'documents', 'disclosure', 'transportation', 'supportTeam', 'benefits', 'interview'] },
+  { title: 'For this job', note: 'These change with each job you apply for.', ids: ['coverLetter', 'tracker'] },
+]
+
 export const pageInfo = (id: PageId) => PAGES.find((p) => p.id === id)!
+
+export const WORK_ORDER = GROUPS.flatMap((g) => g.ids).map(pageInfo)
+
+// The next page that isn't done yet, starting after `after` and wrapping around. Undefined when all are done.
+export function nextPage(status: Record<PageId, { done: boolean }>, after?: PageId) {
+  const start = after ? WORK_ORDER.findIndex((p) => p.id === after) + 1 : 0
+  return [...WORK_ORDER.slice(start), ...WORK_ORDER.slice(0, start)].find((p) => p.id !== after && !status[p.id].done)
+}

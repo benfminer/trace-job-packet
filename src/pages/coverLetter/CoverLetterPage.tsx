@@ -7,6 +7,8 @@ import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
 import { WordButton } from '../../components/WordButton'
+import { PracticeNote } from '../../components/JobFields'
+import { logTarget } from '../../data/target'
 import { ExperienceStep, JobStep, ReadItStep, StrengthsStep, WhenStep, WhyStep } from './CoverLetterSteps'
 
 const page = pageInfo('coverLetter')
@@ -36,7 +38,7 @@ export function CoverLetterWizard() {
   usePrefill()
   return (
     <Wizard page={page} steps={[
-      { title: 'The job', content: <JobStep /> },
+      { title: 'The job', intro: 'This is the job from your Home screen. Change it here and it changes everywhere.', content: <JobStep /> },
       { title: 'My experience', content: <ExperienceStep /> },
       { title: 'My strengths', content: <StrengthsStep /> },
       { title: 'Why this company', content: <WhyStep /> },
@@ -48,7 +50,12 @@ export function CoverLetterWizard() {
 
 export function CoverLetterPrintView() {
   usePrefill()
-  const { packet } = useStore()
+  const { packet, update } = useStore()
+  // A letter for a real job means the job belongs on the Job Search Tracker.
+  const { practice, company, title } = packet.target
+  useEffect(() => {
+    if (!practice && company) update(logTarget)
+  }, [practice, company, title, update])
   const downloadWord = async () => {
     // The Word library is big, so it only loads when someone asks for a Word file.
     // It loads after the Save As window opens (the window must open right after the click).
@@ -59,6 +66,7 @@ export function CoverLetterPrintView() {
       page={page}
       sheets={PAGE_SHEETS.coverLetter}
       extraButtons={<WordButton onClick={downloadWord} />}
+      note={practice ? <PracticeNote /> : undefined}
     />
   )
 }

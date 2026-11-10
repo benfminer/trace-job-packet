@@ -2,12 +2,11 @@ import { pageInfo } from '../../data/pages'
 import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
-import {
-  AnswersStep, HowDidItGoStep, InterviewDayStep, IntroStep, MyQuestionsStep, PracticeStep, QuizStep, ThankYouStep,
-} from './InterviewSteps'
+import { AnswersStep, InterviewDayStep, IntroStep, MyQuestionsStep, PracticeStep, QuizStep } from './InterviewSteps'
 
 const page = pageInfo('interview')
 
+// The thank-you note and "How did it go?" are on their own screen, After the interview (AfterPage).
 export function InterviewWizard() {
   return (
     <Wizard page={page} steps={[
@@ -18,8 +17,6 @@ export function InterviewWizard() {
       { title: 'More questions', content: <AnswersStep keys={['dontKnow', 'upsetCustomer', 'whyHire', 'whenWork']} withOther /> },
       { title: 'Agree or disagree quiz', intro: 'Pick one answer for each, then talk about your answers with your teacher.', content: <QuizStep /> },
       { title: 'Interview day', intro: 'Check off each one as you get ready.', content: <InterviewDayStep /> },
-      { title: 'Thank-you note', content: <ThankYouStep /> },
-      { title: 'How did it go?', intro: 'Fill this in after the interview.', content: <HowDidItGoStep /> },
     ]} />
   )
 }

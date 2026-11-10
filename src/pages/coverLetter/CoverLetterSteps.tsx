@@ -1,30 +1,18 @@
 // Page 02 steps: plan the letter, then read it over.
 import { usePageData } from '../../data/store'
 import { STRENGTHS, availabilitySentence, coverLetterParagraphs } from '../../data/derive'
-import { Card, Check, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
+import { Card, Check, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { LetterBody } from './LetterBody'
 import { SEND_CHECKLIST } from '../../data/options'
-import { AddressFields, type AddressPart } from '../../components/AddressFields'
+import { JobFields, PracticeNote } from '../../components/JobFields'
 import { AvailabilityNote } from '../../components/AvailabilityNote'
 
-const COMPANY_ADDRESS = { street: 'companyStreet', city: 'companyCity', state: 'companyState', zip: 'companyZip' } as const satisfies Record<AddressPart, string>
-
+// The job is typed once and shared (Home has the same card).
 export function JobStep() {
-  const { data: c, set } = usePageData('coverLetter')
   return (
     <>
-      <Grid>
-        <TextField label="Job title" value={c.jobTitle} onChange={(v) => set('jobTitle', v)} placeholder="Store Associate" />
-        <TextField label="Company name" value={c.company} onChange={(v) => set('company', v)} placeholder="Smart & Final" />
-      </Grid>
-      <AddressFields streetLabel="Company street address" street={c.companyStreet} city={c.companyCity} state={c.companyState} zip={c.companyZip}
-        onChange={(part, v) => set(COMPANY_ADDRESS[part], v)} />
-      <div>
-        <TextField label="Where I found the job" value={c.whereFound} onChange={(v) => set('whereFound', v)} />
-        <Ideas ideas={['Indeed', 'the company website', 'a TRACE job fair']} onPick={(v) => set('whereFound', v)} />
-      </div>
-      <TextField label="Hiring manager's name (check the job post)" value={c.hiringManager} onChange={(v) => set('hiringManager', v)}
-        hint='Leave blank if you can&apos;t find it. The letter will say "Hiring Manager" and "Dear Hiring Team."' />
+      <PracticeNote />
+      <JobFields />
     </>
   )
 }
@@ -73,10 +61,10 @@ export function StrengthsStep() {
 }
 
 export function WhyStep() {
-  const { data: c, set } = usePageData('coverLetter')
+  const { data: c, set, packet } = usePageData('coverLetter')
   return (
     <div>
-      <TextArea label={`I want to work at ${c.company || 'this company'} because ...`} value={c.why} onChange={(v) => set('why', v)} rows={3} />
+      <TextArea label={`I want to work at ${packet.target.company || 'this company'} because ...`} value={c.why} onChange={(v) => set('why', v)} rows={3} />
       <Ideas ideas={['I shop there and like how friendly the team is', 'I enjoy working with my hands', 'I want to grow my customer service skills']}
         onPick={(v) => set('why', v)} />
     </div>

@@ -16,8 +16,8 @@ function filledPacket() {
   p.profile.availability.Monday.afternoon = true
   p.profile.availability.Monday.earliest = '2:00 PM'
   p.pages.references.people[2].saidYes = true
-  p.pages.coverLetter.company = 'Smart & Final'
-  p.status.references = { done: true, date: '2026-11-05' }
+  p.target.company = 'Smart & Final'
+  p.status.references = { started: true, done: true, date: '2026-11-05' }
   return p
 }
 
@@ -37,7 +37,7 @@ describe('save and open', () => {
     const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 1, profile: { firstName: 'Ana' } })
     expect(p.profile.firstName).toBe('Ana')
     expect(p.profile.lastName).toBe('')
-    expect(p.profile.jobs).toHaveLength(3)
+    expect(p.profile.jobs).toHaveLength(1)
     expect(p.profile.availability.Sunday.evening).toBe(false)
     expect(p.pages.coverLetter.strengths).toEqual([])
     expect(p.status.tracker.done).toBe(false)
@@ -45,8 +45,7 @@ describe('save and open', () => {
 
   it('splits the old one-box cover letter city into city, state, and ZIP', () => {
     const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 1, pages: { coverLetter: { companyCityStateZip: 'San Diego, CA 92115' } } })
-    expect(p.pages.coverLetter).toMatchObject({ companyCity: 'San Diego', companyState: 'CA', companyZip: '92115' })
-    expect('companyCityStateZip' in p.pages.coverLetter).toBe(false)
+    expect(p.target).toMatchObject({ city: 'San Diego', state: 'CA', zip: '92115' })
   })
 
   it('keeps the number of jobs the student left', () => {
@@ -67,10 +66,29 @@ describe('save and open', () => {
       pages: null,
     })
     expect(p.profile.firstName).toBe('')
-    expect(p.profile.jobs).toHaveLength(3)
+    expect(p.profile.jobs).toHaveLength(1)
     expect(p.profile.strengths).toEqual(['Reliable'])
     expect('hacked' in p.profile).toBe(false)
     expect(p.pages.references.people).toHaveLength(3)
+  })
+
+  it('moves the job from an older cover letter into the shared job card', () => {
+    const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 2, pages: {
+      coverLetter: { jobTitle: 'Stocker', company: 'Target', companyStreet: '1 Sports Arena Blvd', hiringManager: 'Ms. Diaz', why: 'I shop there' },
+      appInfo: { heardAbout: 'Indeed' },
+    } })
+    expect(p.target).toMatchObject({ practice: false, title: 'Stocker', company: 'Target', street: '1 Sports Arena Blvd', whereFound: 'Indeed', hiringManager: 'Ms. Diaz' })
+    expect(p.pages.coverLetter.why).toBe('I shop there')
+    expect(p.status.coverLetter.started).toBe(true)
+    expect(p.status.resume.started).toBe(false)
+  })
+
+  it('starts an older file with no job in practice mode and drops its empty cards', () => {
+    const blankJobs = [{ employer: 'CVS' }, { employer: '' }, { employer: '' }]
+    const p = loadPacket({ app: 'trace-job-packet', schemaVersion: 2, profile: { firstName: 'Ana', jobs: blankJobs } })
+    expect(p.target.practice).toBe(true)
+    expect(p.profile.jobs).toHaveLength(1)
+    expect(p.status.about.started).toBe(true)
   })
 
   it('rejects files that are not packets', () => {

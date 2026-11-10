@@ -1,5 +1,6 @@
 // Text that is built from the packet answers (names, availability sentence, cover letter).
-import { DAYS, type DayAvailability, type Packet } from './packet'
+import { DAYS, type DayAvailability, type Packet, type Target } from './packet'
+import { cityLine } from './format'
 
 type Profile = Packet['profile']
 
@@ -84,12 +85,13 @@ const noEndPeriod = (s: string) => s.trim().replace(/[.\s]+$/, '')
 export function coverLetterParagraphs(packet: Packet) {
   const p = packet.profile
   const c = packet.pages.coverLetter
+  const t = packet.target
   const name = fullName(p) || '[Your Name]'
-  const job = c.jobTitle || '[Job Title]'
-  const company = c.company || '[Company Name]'
+  const job = t.title || '[Job Title]'
+  const company = t.company || '[Company Name]'
 
   const p1 = `My name is ${name}, and I am applying for the ${job} position at ${company}.` +
-    (c.whereFound ? ` I found this job on ${noEndPeriod(c.whereFound)}.` : '')
+    (t.whereFound ? ` I found this job on ${noEndPeriod(t.whereFound)}.` : '')
 
   const p2parts: string[] = []
   if (c.experienceWith) p2parts.push(`I have experience ${lowerFirst(noEndPeriod(c.experienceWith))}.`)
@@ -115,7 +117,14 @@ export function coverLetterParagraphs(packet: Packet) {
   return [p1, p2parts.join(' '), p3, p4].filter(Boolean)
 }
 
-export const greetingName = (c: Packet['pages']['coverLetter']) => c.hiringManager.trim() || 'Hiring Team'
+export const greetingName = (t: Target) => t.hiringManager.trim() || 'Hiring Team'
+
+// The address block at the top of the cover letter.
+export const recipientLines = (t: Target) =>
+  [t.hiringManager.trim() || 'Hiring Manager', t.company, t.street, cityLine(t.city, t.state, t.zip)].filter(Boolean)
+
+// "Store Associate at Smart & Final"
+export const targetLabel = (t: Pick<Target, 'title' | 'company'>) => [t.title, t.company].filter(Boolean).join(' at ')
 
 // "1234 Main Street, San Diego, CA 92105  |  (619) 555-0142  |  jordan@email.com"
 export const contactLine = (p: Profile) =>
@@ -154,11 +163,12 @@ export function introText(i: Packet['pages']['interview']) {
 export function thankYouText(packet: Packet) {
   const i = packet.pages.interview
   const p = packet.profile
+  const t = packet.target
   const lines = [
     `Hi ${i.interviewer || "[Interviewer's Name]"},`,
-    `Thank you for meeting with me today about the ${i.thanksJob || '[Job Title]'} position. ` +
+    `Thank you for meeting with me today about the ${t.title || '[Job Title]'} position. ` +
       `I enjoyed learning about ${i.talkedAbout ? noEndPeriod(i.talkedAbout) : '[something you talked about]'}. ` +
-      `I am excited about the chance to work at ${i.thanksCompany || '[Company Name]'}.`,
+      `I am excited about the chance to work at ${t.company || '[Company Name]'}.`,
     'Have a great day!',
     [fullName(p) || '[Your Name]', p.cellPhone || '[Your Phone Number]'].join('\n'),
   ]

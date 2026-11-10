@@ -3,6 +3,7 @@ import { useProfile } from '../../data/store'
 import { Card, Choice, Grid, Ideas, TextField } from '../../components/fields'
 import { AddressFields, type AddressPart } from '../../components/AddressFields'
 import { formatMonthYear } from '../../data/format'
+import { blankCert } from '../../data/packet'
 
 const SCHOOL_ADDRESS = { street: 'hsAddress', city: 'hsCity', state: 'hsState', zip: 'hsZip' } as const satisfies Record<AddressPart, string>
 
@@ -52,6 +53,10 @@ export function CertificationsStep() {
           {!c.name && <Ideas ideas={['Food Handler Card', 'CPR', 'First Aid']} onPick={(v) => setCert(i, 'name', v)} />}
         </Card>
       ))}
+      <button type="button" onClick={() => update((d) => { d.profile.certifications.push(blankCert()) })}
+        className="rounded-md border border-dashed border-slate-400 px-4 py-2 font-semibold text-slate-600 hover:border-brand hover:text-brand">
+        + Add another certification
+      </button>
       <Choice label="Driver's license?" value={p.driversLicense} onChange={(v) => set('driversLicense', v)}
         options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }, { value: 'permit', label: 'Permit only' }]} />
       {(p.driversLicense === 'yes' || p.driversLicense === 'permit') && (

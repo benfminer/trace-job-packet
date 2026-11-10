@@ -17,14 +17,15 @@ export function LetterSheet() {
 export function BuilderSheet() {
   const { packet } = useStore()
   const c = packet.pages.coverLetter
+  const t = packet.target
   const strengthOptions = [...new Set([...STRENGTHS, ...c.strengths])]
   return (
     <>
       <HandoutHeader title="Cover Letter Builder" subtitle="Plan it first, then type it into the template" name={fullName(packet.profile)} />
       <HSection title="1  The job">
         <FieldTable rows={[
-          [['Job title', c.jobTitle], ['Company name', c.company]],
-          [['Where I found the job', c.whereFound], ["Hiring manager's name", c.hiringManager]],
+          [['Job title', t.title], ['Company name', t.company]],
+          [['Where I found the job', t.whereFound], ["Hiring manager's name", t.hiringManager]],
         ]} />
       </HSection>
       <HSection title="2  My experience" note="Jobs, volunteer work, TRACE work sites, or classes all count.">

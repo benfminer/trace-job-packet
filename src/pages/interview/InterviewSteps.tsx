@@ -5,7 +5,7 @@ import {
   EMPLOYER_QUESTIONS, INTERVIEW_ACCOMMODATION, INTERVIEW_DAY, INTRO_EXAMPLE, INTRO_PARTS, PRACTICE_QUESTIONS,
   QUIZ, QUIZ_CHOICES, QUIZ_KEY, QUIZ_TIPS,
 } from '../../data/options'
-import { availabilitySentence, introText, strengthPhrase, thankYouText } from '../../data/derive'
+import { availabilitySentence, introText, shortDate, strengthPhrase, thankYouText, todayIso } from '../../data/derive'
 import { TEAM_KEYS, type InterviewKey, type Practice, type QuizAnswer } from '../../data/packet'
 import { Card, Check, Choice, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { DateField } from '../../components/DateField'
@@ -179,10 +179,6 @@ export function InterviewDayStep() {
 export function ThankYouStep() {
   const { data, set, packet } = usePageData('interview')
   const [copied, setCopied] = useState(false)
-  const c = packet.pages.coverLetter
-  const applied = packet.pages.tracker.rows.filter((r) => r.company)
-  const companies = [...new Set([c.company, ...applied.map((r) => r.company)].filter(Boolean))]
-  const titles = [...new Set([c.jobTitle, ...applied.map((r) => r.title)].filter(Boolean))]
   const note = thankYouText(packet)
   const copy = async () => {
     await navigator.clipboard.writeText(note)
@@ -193,14 +189,6 @@ export function ThankYouStep() {
       <Tip>Send it by email or text <b>within 1 day</b> after the interview.</Tip>
       <Grid>
         <TextField label="Interviewer's name" value={data.interviewer} onChange={(v) => set('interviewer', v)} />
-        <div>
-          <TextField label="Job title" value={data.thanksJob} onChange={(v) => set('thanksJob', v)} />
-          {titles.length > 0 && <Ideas label="Tap one:" ideas={titles} onPick={(v) => set('thanksJob', v)} />}
-        </div>
-        <div>
-          <TextField label="Company name" value={data.thanksCompany} onChange={(v) => set('thanksCompany', v)} />
-          {companies.length > 0 && <Ideas label="Tap one:" ideas={companies} onPick={(v) => set('thanksCompany', v)} />}
-        </div>
         <TextField label="Something we talked about" value={data.talkedAbout} onChange={(v) => set('talkedAbout', v)}
           placeholder="how the team works together" />
       </Grid>
@@ -217,10 +205,12 @@ export function ThankYouStep() {
 }
 
 export function HowDidItGoStep() {
-  const { data, set } = usePageData('interview')
+  const { data, set, packet } = usePageData('interview')
+  const company = packet.target.company.trim()
   return (
     <>
       <TextField label="Company / date" value={data.howCompanyDate} onChange={(v) => set('howCompanyDate', v)} placeholder="Smart & Final, 11/12" />
+      {company && <Ideas label="Tap to use:" ideas={[`${company}, ${shortDate(todayIso())}`]} onPick={(v) => set('howCompanyDate', v)} />}
       <TextArea label="What went well" value={data.wentWell} onChange={(v) => set('wentWell', v)} />
       <TextArea label="What I'll practice next time" value={data.practiceNext} onChange={(v) => set('practiceNext', v)} />
     </>

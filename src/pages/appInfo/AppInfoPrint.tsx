@@ -1,6 +1,6 @@
 // Page 03 printed like the handout.
 import { useStore } from '../../data/store'
-import { blankJob, type Packet, type YesNo } from '../../data/packet'
+import { blankCert, blankJob, type Packet, type YesNo } from '../../data/packet'
 import { availabilitySentence, fullName, shortDate, todayIso } from '../../data/derive'
 import { fullAddress } from '../../data/format'
 import { TRACE_ADDRESS, TRACE_PROGRAM } from '../../data/apply'
@@ -43,7 +43,9 @@ function ContactSections({ packet }: SectionProps) {
 function JobAndSchoolSections({ packet }: SectionProps) {
   const p = packet.profile
   const a = packet.pages.appInfo
-  const certs = p.certifications
+  // Room to write in more by hand.
+  const certs = [...p.certifications]
+  while (certs.length < 3) certs.push(blankCert())
   return (
     <>
       <HSection title="The job I want">
@@ -111,7 +113,7 @@ function QuestionsSection({ packet }: SectionProps) {
         ['Do you know anyone who works here?', a.knowAnyone],
         ['Do you have reliable transportation?', <span key="rt">{yn(a.reliableTransport)}   How: {a.transportHow || '______'}</span>],
         ['Can you lift ____ lbs? Stand for a full shift?', a.liftStand],
-        ['How did you hear about this job?', a.heardAbout],
+        ['How did you hear about this job?', packet.target.whereFound],
         ['Can you work weekends? Holidays?', a.weekendsHolidays],
       ]} />
     </HSection>

@@ -1,5 +1,5 @@
 // A made-up student ("Jordan Lee" from the handout examples) for demos and tests. Not a real person.
-import { blankPacket, type Packet } from './packet'
+import { blankJob, blankPacket, type Packet } from './packet'
 
 export function samplePacket(): Packet {
   const p = blankPacket()
@@ -23,6 +23,7 @@ export function samplePacket(): Packet {
     supervisor: 'Sam Ortiz', duties: 'Stocked shelves, faced products, and helped customers find what they needed',
     okToContact: 'yes', startPay: 'Unpaid',
   })
+  p.profile.jobs.push(blankJob())
   Object.assign(p.profile.jobs[1], {
     employer: 'San Diego Food Bank', title: 'Volunteer', start: '06/2024', end: '08/2024',
     duties: 'Sorted and packed food donations', reasonLeft: 'It was a seasonal job.', okToContact: 'yes',
@@ -50,9 +51,11 @@ export function samplePacket(): Packet {
     phone: '(619) 555-0122', email: '', knownFor: '10 months', saidYes: true, askedDate: '2026-10-22',
   }
   p.pages.references.uses[0] = { date: '2026-11-01', job: 'Smart & Final, Store Associate', listed: '#1, #2', toldThem: true }
+  p.target = {
+    practice: false, title: 'Store Associate', company: 'Smart & Final', street: '6235 El Cajon Blvd.',
+    city: 'San Diego', state: 'CA', zip: '92115', whereFound: 'the Smart & Final careers website', hiringManager: '',
+  }
   Object.assign(p.pages.coverLetter, {
-    jobTitle: 'Store Associate', company: 'Smart & Final', companyStreet: '6235 El Cajon Blvd.',
-    companyCity: 'San Diego', companyState: 'CA', companyZip: '92115', whereFound: 'the Smart & Final careers website',
     experienceWith: 'working with customers', place1: 'CVS',
     did1: 'stocked shelves, faced products, and helped customers find what they needed',
     strengths: ['Reliable', 'Punctual'], doWell: 'take pride in keeping my work area clean and organized',
@@ -111,7 +114,7 @@ export function samplePacket(): Packet {
     myQuestions: ['How will I be trained?', 'What hours or shifts are open?'],
     quiz: ['sa', 'd', 'a', 'a', 'a', 'sd', 'sa', 'a'],
     checklist: ['Plan my route (see Transportation Plan)', '2 copies of my resume', 'A pen'],
-    interviewer: 'Ms. Garcia', thanksJob: 'Store Associate', thanksCompany: 'Smart & Final', talkedAbout: 'how the team restocks the store each night',
+    interviewer: 'Ms. Garcia', talkedAbout: 'how the team restocks the store each night',
   })
   iv.practice[0] = { who: 'Mr. Miner', date: '2026-11-04' }
   Object.assign(iv.answers, { strengths: 'reliable, on time, team player', dontKnow: 'Ask my supervisor to show me' })
@@ -121,6 +124,6 @@ export function samplePacket(): Packet {
     { date: '2026-10-20', company: 'Target', title: 'Stocker', how: 'Online', contact: '', followUp: '2026-10-27', result: 'waiting' },
   ]
 
-  p.status.about = { done: true, date: '2026-11-05' }
+  p.status.about = { started: true, done: true, date: '2026-11-05' }
   return p
 }

@@ -39,8 +39,8 @@ describe('cover letter', () => {
     const p = blankPacket()
     Object.assign(p.profile, { firstName: 'Jordan', lastName: 'Lee', cellPhone: '(619) 555-0142', email: 'jordan.lee@email.com',
       street: '1234 Main Street', city: 'San Diego', zip: '92105' })
+    Object.assign(p.target, { title: 'Store Associate', company: 'Smart & Final', whereFound: 'the Smart & Final careers website.' })
     Object.assign(p.pages.coverLetter, {
-      jobTitle: 'Store Associate', company: 'Smart & Final', whereFound: 'the Smart & Final careers website.',
       experienceWith: 'Working with customers', place1: 'CVS', did1: 'Stocked shelves and helped customers find products.',
       strengths: ['Reliable', 'Team player'], doWell: 'keep my work area clean and organized',
       why: 'I shop there with my family', whenCanWork: 'Monday through Friday after 2:00 PM',
