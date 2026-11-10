@@ -75,10 +75,12 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           sheet, and other pages.
         </p>
         <p>
-          The Home screen lists the pages in a good working order (the page numbers still match the paper folder), and
-          <b> Next up</b> points to the next page that isn't done. Pages can still be done in any order. Each page ends on
-          a <b>Review & print</b> screen. Click <b>Done, next</b> there to put a checkmark and date on the Home screen and
-          the cover page and move on to the next page.
+          The Home screen is a <b>road map</b>: one stop for each page, in a good working order (the page numbers still
+          match the paper folder). Finished stops get a green check, and <b>You are here</b> marks the next page that
+          isn't done. Click any stop to open it, so pages can still be done in any order. Each page ends on a
+          <b> Review & print</b> screen. Click <b>Done, next</b> there to put a checkmark and date on the Home screen and
+          the cover page. The road moves forward for a moment, then the next page opens. Click <b>Keep going</b> to skip
+          the wait. The small road at the top of each page shows where you are, and its dots jump to other pages.
         </p>
         <p>Dashed "idea" buttons drop a suggestion into the box above them. The student can change it after.</p>
       </Topic>

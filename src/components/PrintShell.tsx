@@ -30,7 +30,8 @@ export function PrintShell({ page, sheets, extraButtons, note }: PrintShellProps
   const next = nextPage(packet.status, page.id)
   const finish = () => {
     if (!status.done) toggleDone(true)
-    go(next ? { view: 'edit', page: next.id } : { view: 'home' })
+    // The trip screen shows the road moving forward, then opens the next page.
+    go({ view: 'trip', page: page.id })
   }
 
   return (

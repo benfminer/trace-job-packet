@@ -5,12 +5,14 @@ import type { Packet } from './packet'
 export type Route =
   | { view: 'home' | 'printAll' | 'help' | 'paper' | 'apply' | 'job' | 'after' }
   | { view: 'edit' | 'print'; page: string; step?: number }
+  | { view: 'trip'; page: string }
 
 export type Store = {
   packet: Packet
   // Change the packet: update((d) => { d.profile.firstName = 'Jordan' })
   update: (fn: (draft: Packet) => void) => void
-  go: (route: Route) => void
+  // replace: swap the current screen in the browser history instead of adding to it.
+  go: (route: Route, replace?: boolean) => void
   route: Route
 }
 

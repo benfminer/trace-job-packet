@@ -13,6 +13,8 @@ import { PaperPage } from './components/PaperPage'
 import { ApplyPage } from './pages/appInfo/ApplyPage'
 import { AfterPage } from './pages/interview/AfterPage'
 import { JobPage } from './components/JobPage'
+import { RoadStrip } from './components/RoadStrip'
+import { TripScreen } from './components/TripScreen'
 
 // Routes live in the URL hash (#/edit/references) so the browser Back button works.
 function readRoute(): Route {
@@ -24,13 +26,14 @@ function readRoute(): Route {
   if (view === 'help') return { view: 'help' }
   if (view === 'paper') return { view: 'paper' }
   if (view === 'apply' || view === 'job' || view === 'after') return { view }
+  if (view === 'trip' && page && PAGE_VIEWS[page]) return { view, page }
   return { view: 'home' }
 }
 
 function routeHash(route: Route) {
   if (route.view === 'printAll') return '#/print-all'
   if (!('page' in route)) return `#/${route.view}`
-  return `#/${route.view}/${route.page}` + (route.step ? `/${route.step}` : '')
+  return `#/${route.view}/${route.page}` + ('step' in route && route.step ? `/${route.step}` : '')
 }
 
 export function App() {
@@ -63,8 +66,9 @@ export function App() {
     setDirty(true)
   }, [])
 
-  const go = useCallback((r: Route) => {
-    window.location.hash = routeHash(r)
+  const go = useCallback((r: Route, replace?: boolean) => {
+    if (replace) window.location.replace(routeHash(r))
+    else window.location.hash = routeHash(r)
     window.scrollTo({ top: 0 })
   }, [])
 
@@ -106,12 +110,19 @@ export function App() {
     : route.view === 'apply' ? ApplyPage
     : route.view === 'job' ? JobPage
     : route.view === 'after' ? AfterPage
+    : route.view === 'trip' ? TripScreen
     : !views ? HomeScreen
     : route.view === 'print' ? (views.Print ?? views.Edit) : views.Edit
 
   return (
     <StoreContext.Provider value={store}>
       <TopBar dirty={dirty} onSave={save} onClose={() => (dirty ? setClosing(true) : close())} />
+      {/* The small road under the top bar shows where this page sits in the packet. */}
+      {(route.view === 'edit' || route.view === 'print') && (
+        <div className="top-bar no-print hidden border-b border-white/10 sm:block">
+          <div className="mx-auto max-w-6xl px-4 pt-2 pb-1"><RoadStrip here={route.page} /></div>
+        </div>
+      )}
       {/* Keyed without the step, so moving between wizard steps doesn't restart the whole screen. */}
       <main key={routeHash({ ...route, step: 0 } as Route)} className="anim-rise">
         <View />

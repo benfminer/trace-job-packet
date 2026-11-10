@@ -1,92 +1,14 @@
-// The packet dashboard: progress and what's next, the job being applied for, then the pages in working order.
-import type { ReactNode } from 'react'
-import { ArrowRight, Briefcase, Check, CircleHelp, ClipboardCopy, MailCheck, Pencil, Printer, type LucideIcon } from 'lucide-react'
+// The packet dashboard: progress and what's next, the job being applied for, then the road map of pages.
+import { ArrowRight, Briefcase, CircleHelp, MapPin, Pencil, Printer } from 'lucide-react'
 import { useStore } from '../data/store'
-import { GROUPS, PAGES, nextPage, pageInfo, type PageInfo } from '../data/pages'
-import type { PageStatus } from '../data/packet'
-import { fullName, shortDate, targetLabel } from '../data/derive'
-import { PAGE_ICONS } from './icons'
+import { PAGES, nextPage } from '../data/pages'
+import { fullName, targetLabel } from '../data/derive'
+import { RoadMap } from './RoadMap'
 import { NewApplicationButton, PracticeBadge } from './JobFields'
 import { PageBand, ProgressBar } from './PageBand'
 import { btnPrimary as primary, btnSecondary as secondary } from './styles'
 
-const chip = 'rounded-full px-2.5 py-1 text-sm font-semibold '
 const iconBox = 'grid size-11 shrink-0 place-items-center rounded-lg '
-const card = 'rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow '
-
-function StatusChip({ status }: { status: PageStatus }) {
-  if (status.done) {
-    return (
-      <span className={chip + 'inline-flex items-center gap-1 bg-green-50 text-green-800 ring-1 ring-green-200'}>
-        <Check aria-hidden className="size-3.5" />Done {shortDate(status.date)}
-      </span>
-    )
-  }
-  if (status.started) return <span className={chip + 'bg-brand-tint text-brand-dark'}>In progress</span>
-  return <span className={chip + 'bg-slate-100 text-slate-600'}>Not started</span>
-}
-
-function PageCard({ page }: { page: PageInfo }) {
-  const { packet, go } = useStore()
-  const status = packet.status[page.id]
-  const Icon = status.done ? Check : PAGE_ICONS[page.id]
-  return (
-    <article className={card + 'flex flex-col gap-3'}>
-      <div className="flex flex-1 items-start gap-3">
-        <span className={iconBox + (status.done ? 'bg-green-50 text-green-700' : 'bg-brand-tint text-brand')}>
-          <Icon aria-hidden className="size-5" />
-        </span>
-        <div>
-          <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-            {page.num ? `Page ${page.num}` : 'Fill this in first'}
-          </p>
-          <h3 className="text-lg font-semibold tracking-tight text-slate-900">{page.title}</h3>
-          <p className="mt-1 text-base text-slate-600">{page.purpose}</p>
-        </div>
-      </div>
-      <div className="mt-auto flex items-center gap-2 border-t border-slate-100 pt-3">
-        <StatusChip status={status} />
-        <span className="flex-1" />
-        {/* About Me has nothing to print. */}
-        {page.num && (
-          <button type="button" onClick={() => go({ view: 'print', page: page.id })} aria-label={`Print ${page.title}`}
-            className="rounded-md border border-slate-300 bg-white p-2 text-slate-600 shadow-sm transition-colors hover:border-brand hover:text-brand">
-            <Printer aria-hidden className="size-5" />
-          </button>
-        )}
-        <button type="button" onClick={() => go({ view: 'edit', page: page.id })} className={primary + ' py-1.5'}>
-          {status.done ? 'Edit' : status.started ? 'Continue' : 'Start'}
-        </button>
-      </div>
-    </article>
-  )
-}
-
-interface ToolCardProps {
-  icon: LucideIcon
-  title: string
-  children: ReactNode
-  button: string
-  onClick: () => void
-}
-
-// A screen that isn't a packet page, like Applying now.
-function ToolCard({ icon: Icon, title, children, button, onClick }: ToolCardProps) {
-  return (
-    <article className={card + 'flex flex-col gap-3'}>
-      <div className="flex flex-1 items-start gap-3">
-        <span className={iconBox + 'bg-brand-tint text-brand'}><Icon aria-hidden className="size-5" /></span>
-        <div>
-          <h3 className="text-lg font-semibold tracking-tight text-slate-900">{title}</h3>
-          <p className="mt-1 text-base text-slate-600">{children}</p>
-        </div>
-      </div>
-      <div className="mt-auto flex justify-end border-t border-slate-100 pt-3">
-        <button type="button" onClick={onClick} className={primary + ' py-1.5'}>{button}</button>
-      </div>
-    </article>
-  )
-}
 
 // The job the packet is aimed at: a practice job while getting ready, then each real job.
 function TargetCard() {
@@ -127,7 +49,7 @@ export function HomeScreen() {
   return (
     <>
       <PageBand eyebrow="Student packet" title={name ? `${name}'s packet` : 'New packet'} width="max-w-6xl">
-        Pick a page to work on. Everything you type in About Me fills in the rest.
+        Follow the road. Everything you type in About Me fills in the rest.
       </PageBand>
       <div className="mx-auto max-w-6xl px-4 pb-16">
         <div className="-mt-14 rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-xl">
@@ -154,6 +76,9 @@ export function HomeScreen() {
                 <p className="flex-1 text-lg text-slate-700">
                   <span className="font-semibold text-slate-900">Next up: {next.title}.</span> {next.purpose}
                 </p>
+                <button type="button" onClick={() => document.getElementById('here')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className={secondary + ' py-2.5'}>
+                  <MapPin aria-hidden className="size-5" />Show me on the map
+                </button>
                 <button type="button" onClick={() => go({ view: 'edit', page: next.id })} className={primary + ' px-5 py-2.5 text-lg'}>
                   {packet.status[next.id].started ? 'Continue' : 'Start'}<ArrowRight aria-hidden className="size-5" />
                 </button>
@@ -166,27 +91,7 @@ export function HomeScreen() {
 
         <TargetCard />
 
-        {GROUPS.map((group, n) => (
-          <section key={group.title}>
-            <div className="mt-9 mb-3">
-              <h2 className="text-xl font-semibold tracking-tight">{n + 1}. {group.title}</h2>
-              <p className="text-slate-600">{group.note}</p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {group.ids.map((id) => <PageCard key={id} page={pageInfo(id)} />)}
-              {group.ids.includes('tracker') && (
-                <>
-                  <ToolCard icon={ClipboardCopy} title="Applying now" button="Copy my answers" onClick={() => go({ view: 'apply' })}>
-                    Filling out an application on the computer? Copy each answer and paste it in.
-                  </ToolCard>
-                  <ToolCard icon={MailCheck} title="After the interview" button="Open" onClick={() => go({ view: 'after' })}>
-                    Send a thank-you note and write down how it went.
-                  </ToolCard>
-                </>
-              )}
-            </div>
-          </section>
-        ))}
+        <RoadMap />
 
         <button type="button" onClick={() => go({ view: 'paper' })}
           className="group mt-9 flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-slate-300 hover:shadow">
