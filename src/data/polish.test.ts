@@ -26,7 +26,7 @@ describe('resume prompt', () => {
 
   it('tells Gemini not to add anything and to say what it changed', () => {
     for (const prompt of [resumePrompt(student()), letterPrompt(student())]) {
-      expect(prompt).toContain('Do NOT add anything new')
+      expect(prompt).toContain('Do NOT add any new facts')
       expect(prompt).toContain('It has to sound like me')
       expect(prompt).toContain('WHAT I CHANGED')
     }

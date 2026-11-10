@@ -131,8 +131,9 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           wording. It is the student's choice to use it.
         </p>
         <p>
-          The instructions tell Gemini to fix spelling and grammar only, to add nothing the student didn't write, to keep
-          the student's own simple words, and to list everything it changed. Read <b>What I changed</b> together. If
+          The instructions tell Gemini to fix spelling and grammar and to reword sentences so they read smoothly and sound
+          confident. It must not add any fact the student didn't write or make a job sound bigger than it was, it must
+          keep the wording simple, and it must list everything it changed. Read <b>What I changed</b> together. If
           Gemini added a skill or duty anyway, don't use that part.
         </p>
         <p>
