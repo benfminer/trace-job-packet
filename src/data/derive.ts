@@ -93,6 +93,17 @@ export function finalLetterParagraphs(text: string) {
   return (end === -1 ? blocks : blocks.slice(0, end)).filter((b) => !(b.length < 60 && /^dear\b/i.test(b)))
 }
 
+// "stocked shelves, faced products, helped customers" gets its "and" before the last thing.
+// Only for lists of three or more, so a comma used some other way is left alone.
+function listWithAnd(text: string) {
+  const parts = text.split(/,\s*/)
+  if (parts.length < 3 || /^(and|or)\s/i.test(parts[parts.length - 1])) return text
+  return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
+}
+
+// What the student did at a place, ready to follow "I".
+const didPhrase = (s: string) => listWithAnd(lowerFirst(noEndPeriod(s)))
+
 // "being reliable", "being a team player": strengths written to follow "My strengths are".
 const beingPhrase = (s: string) => `being ${strengthPhrase(s)}`
 
@@ -113,10 +124,10 @@ export function coverLetterParagraphs(packet: Packet) {
 
   const p2parts: string[] = []
   if (c.experienceWith) p2parts.push(`I have experience ${lowerFirst(noEndPeriod(c.experienceWith))}.`)
-  if (c.place1 && c.did1) p2parts.push(`At ${c.place1}, I ${lowerFirst(noEndPeriod(c.did1))}.`)
+  if (c.place1 && c.did1) p2parts.push(`At ${c.place1}, I ${didPhrase(c.did1)}.`)
   if (c.place2 && c.did2) {
-    // After a first place, the second one turns around so two sentences in a row don't match.
-    p2parts.push(c.place1 && c.did1 ? `I also ${lowerFirst(noEndPeriod(c.did2))} at ${c.place2}.` : `At ${c.place2}, I ${lowerFirst(noEndPeriod(c.did2))}.`)
+    // After a first place, the second one says "also" so two sentences in a row don't match.
+    p2parts.push(`At ${c.place2}, I ${c.place1 && c.did1 ? 'also ' : ''}${didPhrase(c.did2)}.`)
   }
   const picked = c.strengths.filter(Boolean)
   const strengths = picked.length === 1 ? `One of my strengths is ${beingPhrase(picked[0])}` : `My strengths are ${joinList(picked.map(beingPhrase))}`

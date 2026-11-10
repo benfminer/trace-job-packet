@@ -53,10 +53,18 @@ describe('cover letter', () => {
     expect(contactLine(p.profile)).toBe('1234 Main Street, San Diego, CA 92105  |  (619) 555-0142  |  jordan.lee@email.com')
   })
 
-  it('turns the second place around and handles a single strength', () => {
+  it('says "also" for the second place and handles a single strength', () => {
     const p = blankPacket()
     Object.assign(p.pages.coverLetter, { place1: 'CVS', did1: 'Stocked shelves.', place2: 'the Food Bank', did2: 'Sorted donations', strengths: ['Follows directions'] })
-    expect(coverLetterParagraphs(p)[1]).toBe('At CVS, I stocked shelves. I also sorted donations at the Food Bank. One of my strengths is being good at following directions.')
+    expect(coverLetterParagraphs(p)[1]).toBe('At CVS, I stocked shelves. At the Food Bank, I also sorted donations. One of my strengths is being good at following directions.')
+  })
+
+  it('adds the missing "and" to a list of three or more things', () => {
+    const p = blankPacket()
+    const letter = (did1: string) => { Object.assign(p.pages.coverLetter, { place1: 'Sprouts', did1 }); return coverLetterParagraphs(p)[1] }
+    expect(letter('Stocked produce, checked dates, helped customers')).toBe('At Sprouts, I stocked produce, checked dates, and helped customers.')
+    expect(letter('Stocked produce, checked dates, and helped customers')).toBe('At Sprouts, I stocked produce, checked dates, and helped customers.')
+    expect(letter('Stocked produce, which I liked')).toBe('At Sprouts, I stocked produce, which I liked.')
   })
 
   it('uses the final letter the student pasted in, without a pasted greeting, sign-off, or notes', () => {
