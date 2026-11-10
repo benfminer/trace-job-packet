@@ -7,6 +7,7 @@ import { Card, Choice, Grid, Ideas, MultiChoice, TextArea, TextField, Tip } from
 import { yesNo } from '../../data/options'
 import { formatMonthYear } from '../../data/format'
 import { AddressFields, type AddressPart } from '../../components/AddressFields'
+import { KNOWN_EMPLOYERS, PLACE_KINDS, hasDuty, kindById, kindForJob, toggleDuty } from '../../data/jobSites'
 
 const JOB_ADDRESS = { street: 'address', city: 'city', state: 'state', zip: 'zip' } as const satisfies Record<AddressPart, keyof Job>
 
@@ -14,6 +15,32 @@ const REASON_IDEAS = [
   'My program internship ended.', 'It was a seasonal job.', 'I went back to school.',
   "I'm looking for more hours.", 'I moved.',
 ]
+
+interface PillRowProps {
+  label: string
+  options: string[]
+  isOn: (option: string) => boolean
+  onTap: (option: string) => void
+}
+
+// Small tap-on, tap-off buttons. Filled in means it's on.
+function PillRow({ label, options, isOn, onTap }: PillRowProps) {
+  return (
+    <div className="mt-2">
+      <p className="mb-1 text-sm text-slate-500">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <button key={o} type="button" aria-pressed={isOn(o)} onClick={() => onTap(o)}
+            className={'rounded-full border px-3 py-1 text-sm transition-colors ' + (isOn(o)
+              ? 'border-brand bg-brand text-white'
+              : 'border-dashed border-slate-400 bg-slate-50 text-slate-700 hover:border-brand hover:text-brand')}>
+            {o}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 interface JobCardProps {
   index: number
@@ -27,18 +54,43 @@ function JobCard({ index, job, onChange, onRemove }: JobCardProps) {
   // The boxes only applications ask for stay folded away until they're needed.
   // They start open when a saved packet already has something in them.
   const [more, setMore] = useState(() => !!(job.address || job.city || job.zip || job.phone || job.supervisor || job.startPay || job.endPay || job.reasonLeft || job.okToContact))
+  // The kind of place comes from the employer's name. For a place that isn't on the list, the student picks it.
+  const [pickedKind, setPickedKind] = useState('')
+  const kind = kindById(pickedKind) ?? kindForJob(job)
+  const listed = KNOWN_EMPLOYERS.some((e) => e === job.employer)
   return (
     <Card title={`Job #${index + 1}${index === 0 ? ' (most recent)' : ''}`}>
       <Grid>
-        <TextField label="Employer" value={job.employer} onChange={(v) => onChange('employer', v)} placeholder="CVS, a TRACE work site, ..." />
-        <TextField label="Job title" value={job.title} onChange={(v) => onChange('title', v)} placeholder="Store Associate, Volunteer, ..." />
+        <div>
+          <TextField label="Employer" value={job.employer} onChange={(v) => { setPickedKind(''); onChange('employer', v) }}
+            placeholder="CVS, a TRACE work site, ..." />
+          {!job.employer.trim() && (
+            <Ideas label="Places students often work (tap one, or type your own):" ideas={KNOWN_EMPLOYERS}
+              onPick={(v) => { setPickedKind(''); onChange('employer', v) }} />
+          )}
+          {job.employer.trim() && !listed && (
+            <PillRow label="What kind of place is it? (tap one for ideas)" options={PLACE_KINDS.map((k) => k.label)}
+              isOn={(label) => kind?.label === label}
+              onTap={(label) => setPickedKind(kind?.label === label ? '' : PLACE_KINDS.find((k) => k.label === label)!.id)} />
+          )}
+        </div>
+        <div>
+          <TextField label="Job title" value={job.title} onChange={(v) => onChange('title', v)} placeholder="Store Associate, Volunteer, ..." />
+          {kind && <Ideas label="Tap one to use it:" ideas={kind.titles} onPick={(v) => onChange('title', v)} />}
+        </div>
         <TextField label="Start (month/year)" value={job.start} onChange={(v) => onChange('start', v)} placeholder="06/2025"
           format={formatMonthYear} />
         <TextField label='End (or "Present")' value={job.end} onChange={(v) => onChange('end', v)} placeholder="Present"
           format={formatMonthYear} />
       </Grid>
-      <TextArea label="What I did" value={job.duties} onChange={(v) => onChange('duties', v)} rows={2}
-        hint='Start with an action word, like "Stocked shelves and helped customers find products."' />
+      <div>
+        <TextArea label="What I did" value={job.duties} onChange={(v) => onChange('duties', v)} rows={2}
+          hint={kind ? 'Tap below, type your own, or both.' : 'Start with an action word, like "Stocked shelves and helped customers find products."'} />
+        {kind && (
+          <PillRow label="Tap only the things you really did:" options={kind.duties}
+            isOn={(d) => hasDuty(job.duties, d)} onTap={(d) => onChange('duties', toggleDuty(job.duties, d))} />
+        )}
+      </div>
       <details open={more} onToggle={(e) => setMore(e.currentTarget.open)} className="group rounded-lg border border-slate-200">
         <summary className="cursor-pointer px-4 py-3 font-semibold text-brand select-none">
           More details for applications <span className="font-normal text-slate-500">(address, supervisor, pay, why I left)</span>

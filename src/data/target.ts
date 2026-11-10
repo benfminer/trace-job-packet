@@ -1,11 +1,12 @@
 // The job the packet is aimed at: starting a new application, and keeping the tracker in step.
 import { blankApplication, blankTarget, type Packet } from './packet'
 
+// Places from jobSites.ts, so practice looks like the jobs students really get.
 export const PRACTICE_JOBS = [
   { title: 'Store Associate', company: 'Smart & Final' },
-  { title: 'Courtesy Clerk', company: 'Vons' },
-  { title: 'Team Member', company: 'Target' },
-  { title: 'Crew Member', company: "McDonald's" },
+  { title: 'Store Associate', company: 'CVS' },
+  { title: 'Courtesy Clerk', company: 'Grocery Outlet' },
+  { title: 'Park Services Attendant', company: 'SeaWorld' },
 ]
 
 const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase()

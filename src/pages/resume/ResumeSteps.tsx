@@ -1,6 +1,7 @@
 // Page 01 steps. Most of the resume comes from About Me; these add the resume-only parts.
 import { usePageData } from '../../data/store'
 import { SKILL_IDEAS } from '../../data/resume'
+import { skillIdeasFor } from '../../data/jobSites'
 import { Card, Check, Ideas, MultiChoice, TextArea, TextField, Tip } from '../../components/fields'
 import { AvailabilityNote } from '../../components/AvailabilityNote'
 import { Polish } from '../../components/Polish'
@@ -25,10 +26,18 @@ export function GoalStep() {
 
 export function SkillsStep() {
   const { data: r, set, packet } = usePageData('resume')
+  // Skills that go with the student's jobs and aren't on the main list or picked yet.
+  const fromJobs = skillIdeasFor(packet.profile.jobs).filter((s) => !SKILL_IDEAS.includes(s) && !r.skills.includes(s))
   return (
     <>
-      <MultiChoice label="Skills I have" value={r.skills} onChange={(v) => set('skills', v)} options={SKILL_IDEAS} allowOther
-        hint="Pick things you have really done at a job, a TRACE work site, or in class." />
+      <div>
+        <MultiChoice label="Skills I have" value={r.skills} onChange={(v) => set('skills', v)} options={SKILL_IDEAS} allowOther
+          hint="Pick things you have really done at a job, a TRACE work site, or in class." />
+        {fromJobs.length > 0 && (
+          <Ideas label="These go with the jobs you listed. Tap the ones you can really do:" ideas={fromJobs}
+            onPick={(v) => set('skills', [...r.skills, v])} />
+        )}
+      </div>
       {packet.profile.strengths.length > 0 && (
         <Tip>Your strengths from About Me get added too: <b>{packet.profile.strengths.join(', ')}</b>.</Tip>
       )}
