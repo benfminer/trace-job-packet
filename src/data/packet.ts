@@ -88,6 +88,9 @@ export type QuizAnswer = '' | 'sa' | 'a' | 'd' | 'sd'
 
 export type JobResult = '' | 'interview' | 'offer' | 'no' | 'waiting'
 
+// The look of the printed resume. The information on it is the same in every look.
+export type ResumeLayout = 'classic' | 'skills' | 'side'
+
 export type Application = {
   date: string
   company: string
@@ -212,6 +215,7 @@ export function blankPacket() {
         // Bullet points for each job in About Me, one per line.
         bullets: [''],
         showAvailability: true,
+        layout: 'classic' as ResumeLayout,
         prefilled: false,
       },
       documents: {

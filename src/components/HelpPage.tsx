@@ -160,6 +160,11 @@ export function HelpPage({ onBack, backLabel }: HelpPageProps) {
           and Edge so you can pick the folder. It opens in Word or Google Docs (File, Open, Upload) if the student wants to
           change the wording.
         </p>
+        <p>
+          <b>The resume comes in three looks:</b> Classic, Skills First, and Side Labels. Pick one on the resume's
+          <b> Pick a look</b> step, or flip between them with the <b>Look</b> buttons above the printed page. Every look
+          says the same things. Printing, Print all, and the Word file all use the look you picked.
+        </p>
       </Topic>
 
       <Topic title="Interview Prep quiz">

@@ -436,3 +436,94 @@ body {
   color: #1e88d2;
   background: white;
 }
+
+/* ---------- Resume: Skills First look ----------
+   Sizes are in em so the fit-to-one-page check in ResumePrint.tsx can shrink the whole sheet. */
+.r-b {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.38;
+}
+.r-b-name {
+  font-size: 2.45em;
+  font-weight: bold;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.r-b-contact {
+  margin-top: 0.25em;
+  padding-bottom: 0.8em;
+  border-bottom: 2pt solid #1f1f1f;
+  font-size: 0.95em;
+  text-align: center;
+  color: #333;
+}
+.r-b-block {
+  margin-top: 1.1em;
+}
+.r-b-heading {
+  margin-bottom: 0.45em;
+  padding: 0.25em 0.7em;
+  background: #ececec;
+  font-size: 1.02em;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  break-after: avoid;
+}
+.r-b-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-flow: column;
+  column-gap: 16pt;
+}
+
+/* ---------- Resume: Side Labels look ---------- */
+.r-c {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 0.9em;
+  line-height: 1.42;
+}
+.r-c-band {
+  padding: 1.7em 1.8em 1.4em;
+  background: #17324d;
+  color: white;
+}
+.r-c-name {
+  font-size: 2.5em;
+  font-weight: bold;
+  line-height: 1.1;
+}
+.r-c-goal {
+  margin-top: 0.5em;
+  color: #d5e2ef;
+}
+.r-c-contact {
+  padding: 0.6em 1.8em;
+  background: #e8eff6;
+  font-size: 0.95em;
+  color: #17324d;
+}
+.r-c-row {
+  display: grid;
+  grid-template-columns: 9.5em 1fr;
+  column-gap: 1.4em;
+  padding: 1em 0;
+  border-bottom: 0.75pt solid #d3dde8;
+}
+.r-c-row:last-child {
+  border-bottom: 0;
+}
+.r-c-label {
+  padding-top: 0.1em;
+  font-size: 0.92em;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #17324d;
+}
+.r-c-when {
+  font-size: 0.95em;
+  color: #555;
+}

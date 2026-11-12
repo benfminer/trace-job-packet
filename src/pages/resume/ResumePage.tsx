@@ -8,6 +8,7 @@ import { Wizard } from '../../components/Wizard'
 import { PrintShell } from '../../components/PrintShell'
 import { PAGE_SHEETS } from '../sheets'
 import { WordButton } from '../../components/WordButton'
+import { LayoutPicker } from './LayoutPicker'
 import { ExperienceStep, FinishStep, GoalStep, PolishStep, SkillsStep } from './ResumeSteps'
 
 const page = pageInfo('resume')
@@ -35,6 +36,7 @@ export function ResumeWizard() {
       { title: 'My skills', content: <SkillsStep /> },
       { title: 'What I did at each job', content: <ExperienceStep /> },
       { title: 'Polish it (optional)', intro: 'Use Gemini to fix spelling and grammar. Skip this step if you like your wording the way it is.', content: <PolishStep /> },
+      { title: 'Pick a look', intro: 'Your resume says the same things in every look. Pick the one you like. You can change it any time.', content: <LayoutPicker /> },
       { title: 'Finishing touches', content: <FinishStep /> },
     ]} />
   )
@@ -53,6 +55,7 @@ export function ResumePrintView() {
       page={page}
       sheets={PAGE_SHEETS.resume}
       extraButtons={<WordButton onClick={downloadWord} />}
+      note={<LayoutPicker compact />}
     />
   )
 }

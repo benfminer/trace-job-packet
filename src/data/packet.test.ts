@@ -28,6 +28,15 @@ describe('save and open', () => {
     expect({ ...reopened, savedAt: '' }).toEqual({ ...p, savedAt: '' })
   })
 
+  it('opens a file from before resume looks as Classic, and keeps a picked look', () => {
+    const old = JSON.parse(serializePacket(filledPacket()))
+    delete old.pages.resume.layout
+    expect(loadPacket(old).pages.resume.layout).toBe('classic')
+    const p = filledPacket()
+    p.pages.resume.layout = 'skills'
+    expect(loadPacket(JSON.parse(serializePacket(p))).pages.resume.layout).toBe('skills')
+  })
+
   it('names the file after the student', () => {
     expect(packetFileName(filledPacket())).toBe('Jordan_Lee_packet.json')
     expect(packetFileName(blankPacket())).toBe('Student_packet.json')

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resumeContent, splitDuties } from './resume'
+import { extrasLine, extrasTitle, resumeContent, resumeLayout, splitDuties } from './resume'
 import { samplePacket } from './sample'
 
 describe('splitDuties', () => {
@@ -29,5 +29,32 @@ describe('resumeContent', () => {
     expect(r.certifications).toEqual(['Food Handler Card (09/2025)'])
     p.pages.resume.showAvailability = false
     expect(resumeContent(p).availability).toBe('')
+  })
+})
+
+describe('resumeLayout', () => {
+  it('starts as Classic and keeps the look that was picked', () => {
+    const p = samplePacket()
+    expect(resumeLayout(p)).toBe('classic')
+    p.pages.resume.layout = 'side'
+    expect(resumeLayout(p)).toBe('side')
+  })
+  it('prints as Classic when a file holds a look this app does not know', () => {
+    const p = samplePacket()
+    p.pages.resume.layout = 'fancy' as never
+    expect(resumeLayout(p)).toBe('classic')
+  })
+})
+
+describe('Skills First extras line', () => {
+  it('puts certifications and languages on one line, or just the one the student has', () => {
+    const p = samplePacket()
+    const r = resumeContent(p)
+    expect(extrasTitle(r)).toBe('Certifications and Languages')
+    expect(extrasLine(r)).toBe('Food Handler Card (09/2025)  \u2022  Speaks English and Spanish')
+    p.pages.resume.languages = ''
+    expect(extrasTitle(resumeContent(p))).toBe('Certifications')
+    p.profile.certifications = [{ name: '', earned: '', expires: '' }]
+    expect(extrasTitle(resumeContent(p))).toBe('')
   })
 })

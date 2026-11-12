@@ -1,5 +1,5 @@
 // Turns the packet into resume content. The print view and the Word file both use this.
-import type { Packet } from './packet'
+import type { Packet, ResumeLayout } from './packet'
 import { availabilitySentence, contactLine, fullName } from './derive'
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
@@ -16,6 +16,17 @@ export const SKILL_IDEAS = [
   'Customer service', 'Stocking shelves', 'Cleaning and organizing', 'Cash register', 'Food prep',
   'Following a schedule', 'Working on a team', 'Computer and email', 'Sorting and packing', 'Safe lifting',
 ]
+
+// The three looks a resume can print in. The first one is what a new packet starts with.
+export const RESUME_LAYOUTS: { id: ResumeLayout; name: string; bestFor: string }[] = [
+  { id: 'classic', name: 'Classic', bestFor: 'A traditional look. Good when you have two or more jobs to show.' },
+  { id: 'skills', name: 'Skills First', bestFor: 'Your skills go on top. Good when you have one job, or work sites and volunteering.' },
+  { id: 'side', name: 'Side Labels', bestFor: 'A modern look with a dark band for your name. Uses more ink.' },
+]
+
+// The look saved in the packet. A file with a look this app doesn't know prints as Classic.
+export const resumeLayout = (packet: Packet): ResumeLayout =>
+  RESUME_LAYOUTS.find((l) => l.id === packet.pages.resume.layout)?.id ?? 'classic'
 
 export type ResumeJob = { title: string; employer: string; dates: string; bullets: string[] }
 export type ResumeSchool = { name: string; detail: string; dates: string }
@@ -59,3 +70,12 @@ export function resumeContent(packet: Packet) {
 }
 
 export type ResumeContent = ReturnType<typeof resumeContent>
+
+// Skills First puts certifications and languages on one line.
+// "Certifications and Languages", or just the one the student has.
+export const extrasTitle = (r: ResumeContent) =>
+  [r.certifications.length > 0 && 'Certifications', r.languages && 'Languages'].filter(Boolean).join(' and ')
+
+// "Food Handler Card (09/2025)  •  Speaks English and Spanish"
+export const extrasLine = (r: ResumeContent) =>
+  [...r.certifications, r.languages && `Speaks ${r.languages}`].filter(Boolean).join('  •  ')

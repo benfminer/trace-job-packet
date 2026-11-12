@@ -65,6 +65,9 @@ Dashed "idea" buttons under a box drop a suggestion into it. The student can cha
 - **Print all** on the Home screen prints the cover page and every page marked done as one set, ready for the
   student's folder. You can add or remove pages before printing.
 - The resume and cover letter also have **Download Word file**. It opens in Word or Google Docs for editing.
+- The resume comes in three looks: **Classic**, **Skills First**, and **Side Labels**. Pick one on the resume's
+  **Pick a look** step, or with the **Look** buttons above the printed page. Every look says the same things, and
+  printing, Print all, and the Word file all use the look you picked.
 
 ### Interview Prep quiz
 On the "Agree or disagree" step, the student answers first. Then click **Teacher: check answers** to see which answers
